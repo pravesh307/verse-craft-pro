@@ -463,13 +463,20 @@ function HeartfeltPage() {
   }
 
   if (giftView && result) {
-    if (showPoem) return <PoemViewer result={result} photo={photo} occasion={occasion} />;
-    return <GiftReveal result={result} photo={photo} occasion={occasion} onOpened={() => setShowPoem(true)} />;
+    return (
+      <>
+        {audioMount}
+        {showPoem
+          ? <PoemViewer result={result} photo={photo} occasion={occasion} />
+          : <GiftReveal result={result} photo={photo} occasion={occasion} onOpened={() => setShowPoem(true)} />}
+      </>
+    );
   }
 
   if (step === "form") {
     return (
       <div style={{ minHeight: "100dvh", background: "linear-gradient(160deg,#FDF6EE,#FAF0E6)", padding: "20px 16px 48px", display: "flex", flexDirection: "column", alignItems: "center", boxSizing: "border-box" }}>
+        {audioMount}
         <div style={{ maxWidth: 440, width: "100%" }}>
           <div style={{ textAlign: "center", marginBottom: 24, marginTop: 8 }}>
             <div style={{ fontSize: 32, marginBottom: 8 }}>🎁</div>
