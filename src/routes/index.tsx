@@ -460,7 +460,8 @@ function HeartfeltPage() {
     setLoading(true);
     setError(null);
     setShareLink(null);
-    unlockMusic(true);
+    // music is started manually via the play button on the poem
+
     try {
       const occ = OCCASIONS.find((o) => o.id === occasion);
       const themeHint = occ?.themeHint ?? "gratitude";
