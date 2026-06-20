@@ -547,7 +547,6 @@ function HeartfeltPage() {
           <div style={{ textAlign: "center", marginBottom: 24, marginTop: 8 }}>
             <div style={{ fontSize: 32, marginBottom: 8 }}>🎁</div>
             <h1 style={{ fontSize: 28, fontWeight: 400, fontStyle: "italic", color: "#3D1F2A", marginBottom: 4 }}>Heartfelt</h1>
-            <p style={{ color: "#A8B5A2", fontSize: 13 }}>Preview free · A$5 to share as a gift link</p>
           </div>
           <div style={{ background: "#fff", borderRadius: 20, padding: "20px 18px", boxShadow: "0 4px 24px rgba(0,0,0,0.06)", display: "flex", flexDirection: "column", gap: 16 }}>
             {([
