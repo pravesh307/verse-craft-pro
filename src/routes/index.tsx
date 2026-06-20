@@ -399,6 +399,7 @@ function HeartfeltPage() {
           if (r.paid) {
             const link = `${window.location.origin}/?gift=${giftId}`;
             setShareLink(link);
+            try { localStorage.setItem("heartfelt_last_gift", giftId); } catch {}
             // clean url
             window.history.replaceState({}, "", "/");
           } else {
@@ -408,6 +409,14 @@ function HeartfeltPage() {
         .catch((e) => setError(e?.message || "Could not confirm payment"))
         .finally(() => setConfirming(false));
       return;
+    }
+
+    // Recover last share link if user closed the tab after paying
+    if (!giftId) {
+      try {
+        const last = localStorage.getItem("heartfelt_last_gift");
+        if (last) setShareLink(`${window.location.origin}/?gift=${last}`);
+      } catch {}
     }
 
     if (giftId) {
