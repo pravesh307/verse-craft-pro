@@ -440,9 +440,23 @@ function HeartfeltPage() {
     });
   };
 
+  // Hidden audio element rendered once at app root so the source is primed
+  // before any user gesture — required for iOS Safari to play reliably.
+  const audioMount = (
+    <audio
+      ref={registerAudio}
+      src={musicAsset.url}
+      preload="auto"
+      loop
+      playsInline
+      style={{ display: "none" }}
+    />
+  );
+
   if (confirming) {
     return (
       <div style={{ minHeight: "100dvh", display: "flex", alignItems: "center", justifyContent: "center", background: "#150e12", color: "#fff", fontFamily: "Georgia,serif" }}>
+        {audioMount}
         <p style={{ fontStyle: "italic", opacity: 0.85 }}>Confirming your payment…</p>
       </div>
     );
