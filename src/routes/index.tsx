@@ -514,11 +514,8 @@ function HeartfeltPage() {
     });
   };
 
-  const musicButton = (musicBlocked || ((loading || result || giftView) && !musicPlaying)) ? (
-    <button onClick={() => unlockMusic(true)} style={{ position: "fixed", right: 12, bottom: 12, zIndex: 80, background: "#3D1F2A", color: "#fff", border: "none", borderRadius: 999, padding: "9px 13px", fontSize: 12, fontStyle: "italic", boxShadow: "0 8px 24px rgba(0,0,0,0.22)", cursor: "pointer", fontFamily: "inherit" }}>
-      ♪ Turn music on
-    </button>
-  ) : null;
+  const musicButton = null;
+
 
   const withAudio = (content: ReactNode) => (
     <>
