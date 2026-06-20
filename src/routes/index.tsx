@@ -222,7 +222,7 @@ function PoemViewer({ result, photo, occasion, musicPlaying, onPlayMusic }: { re
               <div style={{ position: "absolute", inset: 14, border: `1px solid ${th.accent}`, borderRadius: 4, opacity: 0.2, pointerEvents: "none" }} />
               {photo && (
                 <div style={{ width: 108, height: 108, borderRadius: "50%", overflow: "hidden", marginBottom: 18, border: `4px solid ${th.accent}`, flexShrink: 0 }}>
-                  <img src={photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  <img src={photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top" }} />
                 </div>
               )}
               {occ && <p style={{ fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: th.accent, opacity: 0.6, marginBottom: 10, fontStyle: "italic" }}>{occ.emoji} {occ.chip}</p>}
