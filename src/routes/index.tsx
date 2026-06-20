@@ -535,7 +535,7 @@ function HeartfeltPage() {
   if (giftView && result) {
     return withAudio(
       showPoem
-        ? <PoemViewer result={result} photo={photo} occasion={occasion} />
+        ? <PoemViewer result={result} photo={photo} occasion={occasion} musicPlaying={musicPlaying} onPlayMusic={makeMusicAudible} />
         : <GiftReveal result={result} photo={photo} occasion={occasion} onOpened={() => setShowPoem(true)} onPlayMusic={makeMusicAudible} />
     );
   }
