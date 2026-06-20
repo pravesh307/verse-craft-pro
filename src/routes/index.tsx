@@ -573,7 +573,6 @@ function HeartfeltPage() {
               {loading ? "Writing your poem…" : "🎁 Preview for free"}
             </button>
             {error && <p style={{ fontSize: 12, color: "#b91c1c", textAlign: "center" }}>{error}</p>}
-            <p style={{ fontSize: 12, color: "#a8a29e", textAlign: "center", lineHeight: 1.6 }}>✅ Read full poem free · 💳 Pay A$5 to share with your music</p>
           </div>
         </div>
       </div>
