@@ -95,7 +95,7 @@ function startMusic() {
   }
 }
 function stopMusic() {
-  const a = _audioEl;
+  const a = _audioEl ?? _audioObj;
   if (!a) return;
   try { a.pause(); a.currentTime = 0; } catch {}
 }
