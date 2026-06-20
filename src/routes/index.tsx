@@ -67,13 +67,23 @@ const OCCASIONS = [
 // We render a hidden <audio> element at app mount so iOS/Android browsers
 // have the source primed. A user-gesture call to play() then works reliably.
 let _audioEl: HTMLAudioElement | null = null;
-function registerAudio(el: HTMLAudioElement | null) { _audioEl = el; }
+function registerAudio(el: HTMLAudioElement | null) {
+  _audioEl = el;
+  if (!el) return;
+  el.volume = 1;
+  el.loop = true;
+  el.preload = "auto";
+  el.setAttribute("playsinline", "true");
+  try { el.load(); } catch {}
+}
 function startMusic() {
   const a = _audioEl;
   if (!a) return;
   try {
+    if (!a.paused) return;
     a.loop = true;
-    a.currentTime = 0;
+    a.muted = false;
+    a.volume = 1;
     const p = a.play();
     if (p && typeof p.then === "function") {
       p.catch((e) => console.warn("Audio play blocked:", e?.name || e));
@@ -86,6 +96,15 @@ function stopMusic() {
   const a = _audioEl;
   if (!a) return;
   try { a.pause(); a.currentTime = 0; } catch {}
+}
+
+function fitPoemLine(line: string) {
+  const len = line.trim().length;
+  if (len > 58) return 10.8;
+  if (len > 50) return 11.6;
+  if (len > 42) return 12.5;
+  if (len > 34) return 13.4;
+  return 14.4;
 }
 
 // ===== Decorative SVGs =====
