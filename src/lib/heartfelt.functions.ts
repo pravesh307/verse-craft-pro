@@ -57,10 +57,11 @@ THEME options (pick the single best id): love, gratitude, birthday, comfort, nos
 CRITICAL RULES:
 - titleLine MUST use the actual recipient name (e.g. "Dear Hari", "Dear Mom", "For Sarah"). Never use a placeholder.
 - The poem MUST clearly reflect the specific situation/context above — reference real details (names, places, shared moments, feelings) that the sender described. Do NOT write a generic greeting-card poem.
+- LANGUAGE: use simple, everyday words that anyone can understand on the first read. Write at a 6th-grade reading level. NO fancy/literary/archaic words (avoid: thee, thou, thy, whence, hither, ere, oft, 'tis, behold, yonder, weave, tapestry, ethereal, ephemeral, sublime, resplendent, luminous, eternal, infinite, boundless, profound, cherish, beseech, vow). Use words people actually say out loud — "love, miss, hug, smile, laugh, hold, stay, home, warm, safe, thank you, proud, here, always." Short, clear sentences. If a word would make someone pause to think what it means, replace it.
 - POEM: exactly 6 stanzas, 4 lines each, AABB rhyme scheme, 8-12 words per line. Emotional arc across the stanzas: memory → sacrifice/struggle → quiet moments → gratitude → forever promise → blessing. No clichés, no AI-sounding phrases.
-- Write at the quality of a thoughtful human poet — warm, specific, vivid imagery, honest emotion.
+- Write like a real person speaking from the heart to someone they love — warm, honest, easy to understand. Specific details over fancy metaphors.
 - Separate stanzas with a single blank line (\\n\\n). Separate lines within a stanza with a single newline (\\n).
-- closing: one short italic sentence followed by a fitting emoji.
+- closing: one short italic sentence in plain everyday words, followed by a fitting emoji.
 
 Return ONLY the structured object.`;
 
