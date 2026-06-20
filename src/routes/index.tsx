@@ -297,21 +297,67 @@ function HeartfeltPage() {
   const [showPoem, setShowPoem] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [musicPlaying, setMusicPlaying] = useState(false);
+  const [musicBlocked, setMusicBlocked] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const startMusic = useCallback(() => {
-    if (typeof window === "undefined") return;
-    const audio = audioRef.current ?? new Audio(musicAsset.url);
+  const ensureAudio = useCallback(() => {
+    if (audioRef.current) return audioRef.current;
+    const audio = document.createElement("audio");
+    audio.src = musicAsset.url;
+    audio.loop = true;
+    audio.preload = "auto";
+    audio.setAttribute("playsinline", "true");
+    audio.style.position = "fixed";
+    audio.style.left = "0";
+    audio.style.top = "0";
+    audio.style.width = "1px";
+    audio.style.height = "1px";
+    audio.style.opacity = "0";
+    audio.style.pointerEvents = "none";
+    audio.addEventListener("playing", () => setMusicPlaying(true));
+    audio.addEventListener("pause", () => setMusicPlaying(false));
+    audio.addEventListener("error", () => setMusicBlocked(true));
+    document.body.appendChild(audio);
     audioRef.current = audio;
+    return audio;
+  }, []);
+
+  const unlockMusic = useCallback((audible = false) => {
+    if (typeof window === "undefined") return;
+    const audio = ensureAudio();
     audio.loop = true;
     audio.preload = "auto";
     audio.muted = false;
-    audio.volume = 1;
+    audio.volume = audible ? 1 : 0.01;
     audio.setAttribute("playsinline", "true");
+    (window as unknown as { __heartfeltAudioDebug?: Record<string, unknown> }).__heartfeltAudioDebug = {
+      attemptedAt: new Date().toISOString(),
+      audible,
+      src: audio.src,
+    };
     audio.play()
-      .then(() => setMusicPlaying(true))
-      .catch(() => setMusicPlaying(false));
-  }, []);
+      .then(() => {
+        setMusicPlaying(true);
+        setMusicBlocked(false);
+      })
+      .catch((error: unknown) => {
+        console.warn("Heartfelt music blocked", error);
+        setMusicPlaying(false);
+        setMusicBlocked(true);
+      });
+  }, [ensureAudio]);
+
+  const makeMusicAudible = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio || audio.paused) {
+      unlockMusic(true);
+      return;
+    }
+    audio.muted = false;
+    audio.volume = 1;
+    setMusicPlaying(true);
+    setMusicBlocked(false);
+  }, [unlockMusic]);
 
   const stopMusic = useCallback(() => {
     const audio = audioRef.current;
@@ -322,7 +368,9 @@ function HeartfeltPage() {
   }, []);
 
   useEffect(() => () => {
-    audioRef.current?.pause();
+    const audio = audioRef.current;
+    audio?.pause();
+    audio?.remove();
     audioRef.current = null;
   }, []);
 
@@ -403,7 +451,7 @@ function HeartfeltPage() {
     setLoading(true);
     setError(null);
     setShareLink(null);
-    startMusic();
+    unlockMusic(true);
     try {
       const occ = OCCASIONS.find((o) => o.id === occasion);
       const themeHint = occ?.themeHint ?? "gratitude";
@@ -456,29 +504,14 @@ function HeartfeltPage() {
     });
   };
 
-  const musicButton = (loading || result || giftView) && !musicPlaying ? (
-    <button onClick={startMusic} style={{ position: "fixed", right: 12, bottom: 12, zIndex: 80, background: "#3D1F2A", color: "#fff", border: "none", borderRadius: 999, padding: "9px 13px", fontSize: 12, fontStyle: "italic", boxShadow: "0 8px 24px rgba(0,0,0,0.22)", cursor: "pointer", fontFamily: "inherit" }}>
-      ♪ Play music
+  const musicButton = (musicBlocked || ((loading || result || giftView) && !musicPlaying)) ? (
+    <button onClick={() => unlockMusic(true)} style={{ position: "fixed", right: 12, bottom: 12, zIndex: 80, background: "#3D1F2A", color: "#fff", border: "none", borderRadius: 999, padding: "9px 13px", fontSize: 12, fontStyle: "italic", boxShadow: "0 8px 24px rgba(0,0,0,0.22)", cursor: "pointer", fontFamily: "inherit" }}>
+      ♪ Turn music on
     </button>
   ) : null;
 
-  const audioMount = (
-    <audio
-      ref={audioRef}
-      src={musicAsset.url}
-      preload="auto"
-      loop
-      playsInline
-      onPlay={() => setMusicPlaying(true)}
-      onPause={() => setMusicPlaying(false)}
-      onError={() => setMusicPlaying(false)}
-      style={{ position: "fixed", left: 0, top: 0, width: 1, height: 1, opacity: 0, pointerEvents: "none" }}
-    />
-  );
-
   const withAudio = (content: ReactNode) => (
     <>
-      {audioMount}
       {content}
       {musicButton}
     </>
@@ -496,7 +529,7 @@ function HeartfeltPage() {
     return withAudio(
       showPoem
         ? <PoemViewer result={result} photo={photo} occasion={occasion} />
-        : <GiftReveal result={result} photo={photo} occasion={occasion} onOpened={() => setShowPoem(true)} onPlayMusic={startMusic} />
+        : <GiftReveal result={result} photo={photo} occasion={occasion} onOpened={() => setShowPoem(true)} onPlayMusic={makeMusicAudible} />
     );
   }
 
@@ -540,7 +573,7 @@ function HeartfeltPage() {
               <input id="fphoto" type="file" accept="image/*" onChange={handlePhoto} style={{ display: "none" }} />
               {photo && <img src={photo} alt="" style={{ marginTop: 8, width: 64, height: 64, borderRadius: 12, objectFit: "cover" }} />}
             </div>
-            <button onPointerDown={() => { if (!loading) startMusic(); }} onMouseDown={() => { if (!loading) startMusic(); }} onTouchStart={() => { if (!loading) startMusic(); }} onClick={onGenerate} disabled={loading} style={{ width: "100%", background: "#3D1F2A", color: "#fff", border: "none", borderRadius: 14, padding: "15px", fontSize: 16, fontStyle: "italic", cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.7 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, minHeight: 52, fontFamily: "inherit", touchAction: "manipulation" }}>
+            <button onPointerDown={() => { if (!loading) unlockMusic(true); }} onMouseDown={() => { if (!loading) unlockMusic(true); }} onTouchStart={() => { if (!loading) unlockMusic(true); }} onClick={onGenerate} disabled={loading} style={{ width: "100%", background: "#3D1F2A", color: "#fff", border: "none", borderRadius: 14, padding: "15px", fontSize: 16, fontStyle: "italic", cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.7 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, minHeight: 52, fontFamily: "inherit", touchAction: "manipulation" }}>
               {loading ? "Writing your poem…" : "🎁 Preview for free"}
             </button>
             {error && <p style={{ fontSize: 12, color: "#b91c1c", textAlign: "center" }}>{error}</p>}
