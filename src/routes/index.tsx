@@ -1,6 +1,6 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import musicAsset from "@/assets/music.mp3.asset.json";
 import {
   generatePoem,
@@ -476,7 +476,7 @@ function HeartfeltPage() {
     />
   );
 
-  const withAudio = (content: React.ReactNode) => (
+  const withAudio = (content: ReactNode) => (
     <>
       {audioMount}
       {content}
