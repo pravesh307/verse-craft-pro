@@ -409,6 +409,7 @@ function HeartfeltPage() {
     setLoading(true);
     setError(null);
     setShareLink(null);
+    startMusic();
     try {
       const occ = OCCASIONS.find((o) => o.id === occasion);
       const themeHint = occ?.themeHint ?? "gratitude";
