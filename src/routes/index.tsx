@@ -67,6 +67,7 @@ const OCCASIONS = [
 // We render a hidden <audio> element at app mount so iOS/Android browsers
 // have the source primed. A user-gesture call to play() then works reliably.
 let _audioEl: HTMLAudioElement | null = null;
+let _audioObj: HTMLAudioElement | null = null;
 function registerAudio(el: HTMLAudioElement | null) {
   _audioEl = el;
   if (!el) return;
@@ -77,11 +78,12 @@ function registerAudio(el: HTMLAudioElement | null) {
   try { el.load(); } catch {}
 }
 function startMusic() {
-  const a = _audioEl;
-  if (!a) return;
+  const a = _audioEl ?? (_audioObj ||= new Audio(musicAsset.url));
   try {
     if (!a.paused) return;
     a.loop = true;
+    a.preload = "auto";
+    a.setAttribute("playsinline", "true");
     a.muted = false;
     a.volume = 1;
     const p = a.play();
