@@ -604,7 +604,7 @@ function HeartfeltPage() {
         <span style={{ color: "#9a8a8e", fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase" }}>{th.label} · preview</span>
         <div style={{ width: 60 }} />
       </div>
-      <PoemViewer result={result} photo={photo} occasion={occasion} />
+      <PoemViewer result={result} photo={photo} occasion={occasion} musicPlaying={musicPlaying} onPlayMusic={makeMusicAudible} />
       <div style={{ width: "100%", maxWidth: 360, marginTop: 16 }}>
         {shareLink ? (
           <div style={{ background: "#1e1218", borderRadius: 16, padding: 16 }}>
