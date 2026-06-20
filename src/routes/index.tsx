@@ -279,7 +279,7 @@ function PoemViewer({ result, photo, occasion }: { result: PoemResult; photo: st
                   {stanzas.map((s, si) => (
                     <div key={si} style={{ marginBottom: 18, textAlign: "center" }}>
                       {s.trim().split("\n").map((line, li) => (
-                        <p key={li} style={{ fontSize: fitPoemLine(line), lineHeight: 1.9, color: th.accent, margin: 0, letterSpacing: 0, whiteSpace: "nowrap", overflow: "visible" }}>{line.trim()}</p>
+                        <p key={li} style={{ fontSize: fitPoemLine(line), lineHeight: 1.9, color: th.accent, margin: 0, letterSpacing: "0.01em", whiteSpace: "nowrap" }}>{line.trim()}</p>
                       ))}
                     </div>
                   ))}
