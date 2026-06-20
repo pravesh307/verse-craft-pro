@@ -463,15 +463,13 @@ function HeartfeltPage() {
     // music is started manually via the play button on the poem
 
     try {
-      const occ = OCCASIONS.find((o) => o.id === occasion);
-      const themeHint = occ?.themeHint ?? "gratitude";
       const poem = await generate({
         data: {
           senderName,
           recipientName,
           description,
-          occasion: occ?.prompt ?? null,
-          themeHint,
+          occasion: null,
+          themeHint: "gratitude",
         },
       });
       setResult(poem);
