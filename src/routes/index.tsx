@@ -1,6 +1,6 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import musicAsset from "@/assets/music.mp3.asset.json";
 import {
   generatePoem,
@@ -67,6 +67,7 @@ const OCCASIONS = [
 // We render a hidden <audio> element at app mount so iOS/Android browsers
 // have the source primed. A user-gesture call to play() then works reliably.
 let _audioEl: HTMLAudioElement | null = null;
+let _audioObj: HTMLAudioElement | null = null;
 function registerAudio(el: HTMLAudioElement | null) {
   _audioEl = el;
   if (!el) return;
@@ -77,11 +78,12 @@ function registerAudio(el: HTMLAudioElement | null) {
   try { el.load(); } catch {}
 }
 function startMusic() {
-  const a = _audioEl;
-  if (!a) return;
+  const a = _audioEl ?? (_audioObj ||= new Audio(musicAsset.url));
   try {
     if (!a.paused) return;
     a.loop = true;
+    a.preload = "auto";
+    a.setAttribute("playsinline", "true");
     a.muted = false;
     a.volume = 1;
     const p = a.play();
@@ -93,9 +95,14 @@ function startMusic() {
   }
 }
 function stopMusic() {
-  const a = _audioEl;
+  const a = _audioEl ?? _audioObj;
   if (!a) return;
   try { a.pause(); a.currentTime = 0; } catch {}
+}
+
+function isMusicPlaying() {
+  const a = _audioEl ?? _audioObj;
+  return Boolean(a && !a.paused && !a.ended && a.currentTime > 0);
 }
 
 function fitPoemLine(line: string) {
@@ -331,6 +338,7 @@ function HeartfeltPage() {
   const [giftView, setGiftView] = useState(false);
   const [showPoem, setShowPoem] = useState(false);
   const [confirming, setConfirming] = useState(false);
+  const [musicPlaying, setMusicPlaying] = useState(false);
 
   // On mount: handle ?gift=ID (recipient) or ?paid=1&gift=ID&session_id=... (sender just paid)
   useEffect(() => {
@@ -410,6 +418,7 @@ function HeartfeltPage() {
     setError(null);
     setShareLink(null);
     startMusic();
+    window.setTimeout(() => setMusicPlaying(isMusicPlaying()), 350);
     try {
       const occ = OCCASIONS.find((o) => o.id === occasion);
       const themeHint = occ?.themeHint ?? "gratitude";
@@ -476,30 +485,39 @@ function HeartfeltPage() {
     />
   );
 
+  const musicButton = (loading || result || giftView) && !musicPlaying ? (
+    <button onClick={() => { startMusic(); window.setTimeout(() => setMusicPlaying(isMusicPlaying()), 250); }} style={{ position: "fixed", right: 12, bottom: 12, zIndex: 80, background: "#3D1F2A", color: "#fff", border: "none", borderRadius: 999, padding: "9px 13px", fontSize: 12, fontStyle: "italic", boxShadow: "0 8px 24px rgba(0,0,0,0.22)", cursor: "pointer", fontFamily: "inherit" }}>
+      ♪ Play music
+    </button>
+  ) : null;
+
+  const withAudio = (content: ReactNode) => (
+    <>
+      {audioMount}
+      {content}
+      {musicButton}
+    </>
+  );
+
   if (confirming) {
-    return (
+    return withAudio(
       <div style={{ minHeight: "100dvh", display: "flex", alignItems: "center", justifyContent: "center", background: "#150e12", color: "#fff", fontFamily: "Georgia,serif" }}>
-        {audioMount}
         <p style={{ fontStyle: "italic", opacity: 0.85 }}>Confirming your payment…</p>
       </div>
     );
   }
 
   if (giftView && result) {
-    return (
-      <>
-        {audioMount}
-        {showPoem
-          ? <PoemViewer result={result} photo={photo} occasion={occasion} />
-          : <GiftReveal result={result} photo={photo} occasion={occasion} onOpened={() => setShowPoem(true)} />}
-      </>
+    return withAudio(
+      showPoem
+        ? <PoemViewer result={result} photo={photo} occasion={occasion} />
+        : <GiftReveal result={result} photo={photo} occasion={occasion} onOpened={() => setShowPoem(true)} />
     );
   }
 
   if (step === "form") {
-    return (
+    return withAudio(
       <div style={{ minHeight: "100dvh", background: "linear-gradient(160deg,#FDF6EE,#FAF0E6)", padding: "20px 16px 48px", display: "flex", flexDirection: "column", alignItems: "center", boxSizing: "border-box" }}>
-        {audioMount}
         <div style={{ maxWidth: 440, width: "100%" }}>
           <div style={{ textAlign: "center", marginBottom: 24, marginTop: 8 }}>
             <div style={{ fontSize: 32, marginBottom: 8 }}>🎁</div>
@@ -537,7 +555,7 @@ function HeartfeltPage() {
               <input id="fphoto" type="file" accept="image/*" onChange={handlePhoto} style={{ display: "none" }} />
               {photo && <img src={photo} alt="" style={{ marginTop: 8, width: 64, height: 64, borderRadius: 12, objectFit: "cover" }} />}
             </div>
-            <button onClick={onGenerate} disabled={loading} style={{ width: "100%", background: "#3D1F2A", color: "#fff", border: "none", borderRadius: 14, padding: "15px", fontSize: 16, fontStyle: "italic", cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.7 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, minHeight: 52, fontFamily: "inherit" }}>
+            <button onPointerDown={() => { if (!loading) startMusic(); }} onClick={onGenerate} disabled={loading} style={{ width: "100%", background: "#3D1F2A", color: "#fff", border: "none", borderRadius: 14, padding: "15px", fontSize: 16, fontStyle: "italic", cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.7 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, minHeight: 52, fontFamily: "inherit" }}>
               {loading ? "Writing your poem…" : "🎁 Preview for free"}
             </button>
             {error && <p style={{ fontSize: 12, color: "#b91c1c", textAlign: "center" }}>{error}</p>}
@@ -552,9 +570,8 @@ function HeartfeltPage() {
   if (!result) return null;
   const th = THEMES[result.theme] || THEMES.gratitude;
   const titleShort = result.titleLine.replace("Dear ", "").replace("For ", "").replace("To ", "");
-  return (
+  return withAudio(
     <div style={{ minHeight: "100dvh", background: "#150e12", display: "flex", flexDirection: "column", alignItems: "center", padding: "12px 16px 32px", boxSizing: "border-box" }}>
-      {audioMount}
       <div style={{ width: "100%", maxWidth: 400, display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
         <button onClick={() => { stopMusic(); setStep("form"); setResult(null); setShareLink(null); router.invalidate(); }} style={{ background: "none", border: "none", color: "#9a8a8e", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 13, minHeight: 40, padding: "4px 0", fontFamily: "inherit" }}>
           ← Back
