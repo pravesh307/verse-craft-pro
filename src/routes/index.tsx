@@ -451,7 +451,7 @@ function HeartfeltPage() {
     setLoading(true);
     setError(null);
     setShareLink(null);
-    unlockMusic(false);
+    unlockMusic(true);
     try {
       const occ = OCCASIONS.find((o) => o.id === occasion);
       const themeHint = occ?.themeHint ?? "gratitude";
@@ -465,7 +465,6 @@ function HeartfeltPage() {
         },
       });
       setResult(poem);
-      makeMusicAudible();
       setStep("preview");
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Generation failed";
