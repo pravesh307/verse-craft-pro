@@ -1,6 +1,6 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import musicAsset from "@/assets/music.mp3.asset.json";
 import {
   generatePoem,
@@ -62,48 +62,6 @@ const OCCASIONS = [
   { id: "congrats", emoji: "🎉", chip: "Congrats", prompt: "Congratulations on achievement", themeHint: "congrats" },
   { id: "missyou", emoji: "🌙", chip: "Miss You", prompt: "Missing them long distance", themeHint: "miss" },
 ];
-
-// ===== Audio (mobile-safe) =====
-// We render a hidden <audio> element at app mount so iOS/Android browsers
-// have the source primed. A user-gesture call to play() then works reliably.
-let _audioEl: HTMLAudioElement | null = null;
-let _audioObj: HTMLAudioElement | null = null;
-function registerAudio(el: HTMLAudioElement | null) {
-  _audioEl = el;
-  if (!el) return;
-  el.volume = 1;
-  el.loop = true;
-  el.preload = "auto";
-  el.setAttribute("playsinline", "true");
-  try { el.load(); } catch {}
-}
-function startMusic() {
-  const a = _audioEl ?? (_audioObj ||= new Audio(musicAsset.url));
-  try {
-    if (!a.paused) return;
-    a.loop = true;
-    a.preload = "auto";
-    a.setAttribute("playsinline", "true");
-    a.muted = false;
-    a.volume = 1;
-    const p = a.play();
-    if (p && typeof p.then === "function") {
-      p.catch((e) => console.warn("Audio play blocked:", e?.name || e));
-    }
-  } catch (e) {
-    console.warn("Audio error", e);
-  }
-}
-function stopMusic() {
-  const a = _audioEl ?? _audioObj;
-  if (!a) return;
-  try { a.pause(); a.currentTime = 0; } catch {}
-}
-
-function isMusicPlaying() {
-  const a = _audioEl ?? _audioObj;
-  return Boolean(a && !a.paused && !a.ended && a.currentTime > 0);
-}
 
 function fitPoemLine(line: string) {
   const len = line.trim().length;
