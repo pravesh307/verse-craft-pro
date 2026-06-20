@@ -1,6 +1,6 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import musicAsset from "@/assets/music.mp3.asset.json";
 import {
   generatePoem,
@@ -63,48 +63,6 @@ const OCCASIONS = [
   { id: "missyou", emoji: "🌙", chip: "Miss You", prompt: "Missing them long distance", themeHint: "miss" },
 ];
 
-// ===== Audio (mobile-safe) =====
-// We render a hidden <audio> element at app mount so iOS/Android browsers
-// have the source primed. A user-gesture call to play() then works reliably.
-let _audioEl: HTMLAudioElement | null = null;
-let _audioObj: HTMLAudioElement | null = null;
-function registerAudio(el: HTMLAudioElement | null) {
-  _audioEl = el;
-  if (!el) return;
-  el.volume = 1;
-  el.loop = true;
-  el.preload = "auto";
-  el.setAttribute("playsinline", "true");
-  try { el.load(); } catch {}
-}
-function startMusic() {
-  const a = _audioEl ?? (_audioObj ||= new Audio(musicAsset.url));
-  try {
-    if (!a.paused) return;
-    a.loop = true;
-    a.preload = "auto";
-    a.setAttribute("playsinline", "true");
-    a.muted = false;
-    a.volume = 1;
-    const p = a.play();
-    if (p && typeof p.then === "function") {
-      p.catch((e) => console.warn("Audio play blocked:", e?.name || e));
-    }
-  } catch (e) {
-    console.warn("Audio error", e);
-  }
-}
-function stopMusic() {
-  const a = _audioEl ?? _audioObj;
-  if (!a) return;
-  try { a.pause(); a.currentTime = 0; } catch {}
-}
-
-function isMusicPlaying() {
-  const a = _audioEl ?? _audioObj;
-  return Boolean(a && !a.paused && !a.ended && a.currentTime > 0);
-}
-
 function fitPoemLine(line: string) {
   const len = line.trim().length;
   if (len >= 70) return 8.4;
@@ -143,7 +101,7 @@ function Floral({ flip, flipY, color, opacity }: { flip?: boolean; flipY?: boole
 }
 
 // ===== Gift Reveal =====
-function GiftReveal({ result, occasion, onOpened }: { result: PoemResult; photo: string | null; occasion: string | null; onOpened: () => void }) {
+function GiftReveal({ result, occasion, onOpened, onPlayMusic }: { result: PoemResult; photo: string | null; occasion: string | null; onOpened: () => void; onPlayMusic: () => void }) {
   const th = THEMES[result.theme] || THEMES.gratitude;
   const occ = OCCASIONS.find((o) => o.id === occasion);
   const [opened, setOpened] = useState(false);
@@ -151,7 +109,7 @@ function GiftReveal({ result, occasion, onOpened }: { result: PoemResult; photo:
 
   const handleOpen = () => {
     if (opened) return;
-    startMusic();
+    onPlayMusic();
     setOpened(true);
     setBurst(true);
     setTimeout(() => onOpened(), 950);
@@ -339,6 +297,34 @@ function HeartfeltPage() {
   const [showPoem, setShowPoem] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [musicPlaying, setMusicPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const startMusic = useCallback(() => {
+    if (typeof window === "undefined") return;
+    const audio = audioRef.current ?? new Audio(musicAsset.url);
+    audioRef.current = audio;
+    audio.loop = true;
+    audio.preload = "auto";
+    audio.muted = false;
+    audio.volume = 1;
+    audio.setAttribute("playsinline", "true");
+    audio.play()
+      .then(() => setMusicPlaying(true))
+      .catch(() => setMusicPlaying(false));
+  }, []);
+
+  const stopMusic = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.pause();
+    audio.currentTime = 0;
+    setMusicPlaying(false);
+  }, []);
+
+  useEffect(() => () => {
+    audioRef.current?.pause();
+    audioRef.current = null;
+  }, []);
 
   // On mount: handle ?gift=ID (recipient) or ?paid=1&gift=ID&session_id=... (sender just paid)
   useEffect(() => {
@@ -418,7 +404,6 @@ function HeartfeltPage() {
     setError(null);
     setShareLink(null);
     startMusic();
-    window.setTimeout(() => setMusicPlaying(isMusicPlaying()), 350);
     try {
       const occ = OCCASIONS.find((o) => o.id === occasion);
       const themeHint = occ?.themeHint ?? "gratitude";
@@ -471,25 +456,25 @@ function HeartfeltPage() {
     });
   };
 
-  // Hidden audio element rendered once at app root so the source is primed
-  // before any user gesture — required for iOS Safari to play reliably.
+  const musicButton = (loading || result || giftView) && !musicPlaying ? (
+    <button onClick={startMusic} style={{ position: "fixed", right: 12, bottom: 12, zIndex: 80, background: "#3D1F2A", color: "#fff", border: "none", borderRadius: 999, padding: "9px 13px", fontSize: 12, fontStyle: "italic", boxShadow: "0 8px 24px rgba(0,0,0,0.22)", cursor: "pointer", fontFamily: "inherit" }}>
+      ♪ Play music
+    </button>
+  ) : null;
+
   const audioMount = (
     <audio
-      ref={registerAudio}
+      ref={audioRef}
       src={musicAsset.url}
       preload="auto"
       loop
       playsInline
-      aria-label="Background music"
-      style={{ position: "fixed", left: 0, top: 0, width: 1, height: 1, opacity: 0, pointerEvents: "none", zIndex: -1 }}
+      onPlay={() => setMusicPlaying(true)}
+      onPause={() => setMusicPlaying(false)}
+      onError={() => setMusicPlaying(false)}
+      style={{ position: "fixed", left: 0, top: 0, width: 1, height: 1, opacity: 0, pointerEvents: "none" }}
     />
   );
-
-  const musicButton = (loading || result || giftView) && !musicPlaying ? (
-    <button onClick={() => { startMusic(); window.setTimeout(() => setMusicPlaying(isMusicPlaying()), 250); }} style={{ position: "fixed", right: 12, bottom: 12, zIndex: 80, background: "#3D1F2A", color: "#fff", border: "none", borderRadius: 999, padding: "9px 13px", fontSize: 12, fontStyle: "italic", boxShadow: "0 8px 24px rgba(0,0,0,0.22)", cursor: "pointer", fontFamily: "inherit" }}>
-      ♪ Play music
-    </button>
-  ) : null;
 
   const withAudio = (content: ReactNode) => (
     <>
@@ -511,7 +496,7 @@ function HeartfeltPage() {
     return withAudio(
       showPoem
         ? <PoemViewer result={result} photo={photo} occasion={occasion} />
-        : <GiftReveal result={result} photo={photo} occasion={occasion} onOpened={() => setShowPoem(true)} />
+        : <GiftReveal result={result} photo={photo} occasion={occasion} onOpened={() => setShowPoem(true)} onPlayMusic={startMusic} />
     );
   }
 
@@ -555,7 +540,7 @@ function HeartfeltPage() {
               <input id="fphoto" type="file" accept="image/*" onChange={handlePhoto} style={{ display: "none" }} />
               {photo && <img src={photo} alt="" style={{ marginTop: 8, width: 64, height: 64, borderRadius: 12, objectFit: "cover" }} />}
             </div>
-            <button onPointerDown={() => { if (!loading) startMusic(); }} onClick={onGenerate} disabled={loading} style={{ width: "100%", background: "#3D1F2A", color: "#fff", border: "none", borderRadius: 14, padding: "15px", fontSize: 16, fontStyle: "italic", cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.7 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, minHeight: 52, fontFamily: "inherit" }}>
+            <button onPointerDown={() => { if (!loading) startMusic(); }} onMouseDown={() => { if (!loading) startMusic(); }} onTouchStart={() => { if (!loading) startMusic(); }} onClick={onGenerate} disabled={loading} style={{ width: "100%", background: "#3D1F2A", color: "#fff", border: "none", borderRadius: 14, padding: "15px", fontSize: 16, fontStyle: "italic", cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.7 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, minHeight: 52, fontFamily: "inherit", touchAction: "manipulation" }}>
               {loading ? "Writing your poem…" : "🎁 Preview for free"}
             </button>
             {error && <p style={{ fontSize: 12, color: "#b91c1c", textAlign: "center" }}>{error}</p>}
