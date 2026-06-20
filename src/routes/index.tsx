@@ -428,7 +428,7 @@ function HeartfeltPage() {
     setLoading(true);
     setError(null);
     setShareLink(null);
-    startMusic();
+    unlockMusic(false);
     try {
       const occ = OCCASIONS.find((o) => o.id === occasion);
       const themeHint = occ?.themeHint ?? "gratitude";
@@ -442,6 +442,7 @@ function HeartfeltPage() {
         },
       });
       setResult(poem);
+      makeMusicAudible();
       setStep("preview");
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Generation failed";
@@ -481,9 +482,9 @@ function HeartfeltPage() {
     });
   };
 
-  const musicButton = (loading || result || giftView) && !musicPlaying ? (
-    <button onClick={startMusic} style={{ position: "fixed", right: 12, bottom: 12, zIndex: 80, background: "#3D1F2A", color: "#fff", border: "none", borderRadius: 999, padding: "9px 13px", fontSize: 12, fontStyle: "italic", boxShadow: "0 8px 24px rgba(0,0,0,0.22)", cursor: "pointer", fontFamily: "inherit" }}>
-      ♪ Play music
+  const musicButton = (musicBlocked || ((loading || result || giftView) && !musicPlaying)) ? (
+    <button onClick={() => unlockMusic(true)} style={{ position: "fixed", right: 12, bottom: 12, zIndex: 80, background: "#3D1F2A", color: "#fff", border: "none", borderRadius: 999, padding: "9px 13px", fontSize: 12, fontStyle: "italic", boxShadow: "0 8px 24px rgba(0,0,0,0.22)", cursor: "pointer", fontFamily: "inherit" }}>
+      ♪ Turn music on
     </button>
   ) : null;
 
@@ -521,7 +522,7 @@ function HeartfeltPage() {
     return withAudio(
       showPoem
         ? <PoemViewer result={result} photo={photo} occasion={occasion} />
-        : <GiftReveal result={result} photo={photo} occasion={occasion} onOpened={() => setShowPoem(true)} onPlayMusic={startMusic} />
+        : <GiftReveal result={result} photo={photo} occasion={occasion} onOpened={() => setShowPoem(true)} onPlayMusic={makeMusicAudible} />
     );
   }
 
