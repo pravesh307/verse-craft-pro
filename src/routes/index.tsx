@@ -531,6 +531,7 @@ function HeartfeltPage() {
   const titleShort = result.titleLine.replace("Dear ", "").replace("For ", "").replace("To ", "");
   return (
     <div style={{ minHeight: "100dvh", background: "#150e12", display: "flex", flexDirection: "column", alignItems: "center", padding: "12px 16px 32px", boxSizing: "border-box" }}>
+      {audioMount}
       <div style={{ width: "100%", maxWidth: 400, display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
         <button onClick={() => { stopMusic(); setStep("form"); setResult(null); setShareLink(null); router.invalidate(); }} style={{ background: "none", border: "none", color: "#9a8a8e", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 13, minHeight: 40, padding: "4px 0", fontFamily: "inherit" }}>
           ← Back
