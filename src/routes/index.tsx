@@ -338,6 +338,7 @@ function HeartfeltPage() {
   const [giftView, setGiftView] = useState(false);
   const [showPoem, setShowPoem] = useState(false);
   const [confirming, setConfirming] = useState(false);
+  const [musicPlaying, setMusicPlaying] = useState(false);
 
   // On mount: handle ?gift=ID (recipient) or ?paid=1&gift=ID&session_id=... (sender just paid)
   useEffect(() => {
@@ -417,6 +418,7 @@ function HeartfeltPage() {
     setError(null);
     setShareLink(null);
     startMusic();
+    window.setTimeout(() => setMusicPlaying(isMusicPlaying()), 350);
     try {
       const occ = OCCASIONS.find((o) => o.id === occasion);
       const themeHint = occ?.themeHint ?? "gratitude";
@@ -483,10 +485,17 @@ function HeartfeltPage() {
     />
   );
 
+  const musicButton = (loading || result || giftView) && !musicPlaying ? (
+    <button onClick={() => { startMusic(); window.setTimeout(() => setMusicPlaying(isMusicPlaying()), 250); }} style={{ position: "fixed", right: 12, bottom: 12, zIndex: 80, background: "#3D1F2A", color: "#fff", border: "none", borderRadius: 999, padding: "9px 13px", fontSize: 12, fontStyle: "italic", boxShadow: "0 8px 24px rgba(0,0,0,0.22)", cursor: "pointer", fontFamily: "inherit" }}>
+      ♪ Play music
+    </button>
+  ) : null;
+
   const withAudio = (content: ReactNode) => (
     <>
       {audioMount}
       {content}
+      {musicButton}
     </>
   );
 
