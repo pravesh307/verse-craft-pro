@@ -68,8 +68,8 @@ Return ONLY the structured object.`;
 
     try {
       const { text } = await generateText({
-        model: gateway("openai/gpt-5-mini"),
-        prompt: prompt + "\n\nReturn ONLY valid JSON, no markdown fences, with this exact shape: {\"theme\": <one of the listed theme ids>, \"titleLine\": <string>, \"poem\": <string with stanzas separated by blank lines>, \"closing\": <string>}",
+        model: gateway("google/gemini-2.5-flash"),
+        prompt: prompt + "\n\nReturn ONLY valid JSON, no markdown fences, with this exact shape: {\"theme\": <one of the listed theme ids>, \"titleLine\": <string>, \"poem\": <string with stanzas separated by blank lines (\\n\\n) and lines separated by single newline (\\n)>, \"closing\": <string>}",
       });
 
       // Strip code fences if model added them

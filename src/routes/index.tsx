@@ -64,19 +64,16 @@ const OCCASIONS = [
 ];
 
 // ===== Audio (mobile-safe) =====
-let _audio: HTMLAudioElement | null = null;
+// We render a hidden <audio> element at app mount so iOS/Android browsers
+// have the source primed. A user-gesture call to play() then works reliably.
+let _audioEl: HTMLAudioElement | null = null;
+function registerAudio(el: HTMLAudioElement | null) { _audioEl = el; }
 function startMusic() {
+  const a = _audioEl;
+  if (!a) return;
   try {
-    if (_audio) {
-      _audio.pause();
-      _audio = null;
-    }
-    const a = new Audio(musicAsset.url);
     a.loop = true;
-    a.preload = "auto";
-    // iOS Safari ignores the .volume setter; we let it play at its default volume.
-    // No fade — relying on setInterval to ramp volume doesn't work on iOS and can fail silently.
-    _audio = a;
+    a.currentTime = 0;
     const p = a.play();
     if (p && typeof p.then === "function") {
       p.catch((e) => console.warn("Audio play blocked:", e?.name || e));
@@ -86,10 +83,9 @@ function startMusic() {
   }
 }
 function stopMusic() {
-  if (_audio) {
-    try { _audio.pause(); } catch {}
-    _audio = null;
-  }
+  const a = _audioEl;
+  if (!a) return;
+  try { a.pause(); a.currentTime = 0; } catch {}
 }
 
 // ===== Decorative SVGs =====
@@ -258,11 +254,11 @@ function PoemViewer({ result, photo, occasion }: { result: PoemResult; photo: st
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: photo ? "8px 22px 44px" : "34px 22px 44px", boxSizing: "border-box" }}>
                 <p style={{ fontSize: 17, fontStyle: "italic", color: th.accent, marginBottom: 12, textAlign: "center" }}>{result.titleLine},</p>
                 <Wave color={th.accent} />
-                <div style={{ marginTop: 16, marginBottom: 16, width: "100%" }}>
+                <div style={{ marginTop: 20, marginBottom: 20, width: "100%" }}>
                   {stanzas.map((s, si) => (
-                    <div key={si} style={{ marginBottom: 16, textAlign: "center" }}>
+                    <div key={si} style={{ marginBottom: 22, textAlign: "center" }}>
                       {s.trim().split("\n").map((line, li) => (
-                        <p key={li} style={{ fontSize: 14.5, lineHeight: 1.88, color: th.accent, margin: 0 }}>{line.trim()}</p>
+                        <p key={li} style={{ fontSize: 15, lineHeight: 2, color: th.accent, margin: 0, letterSpacing: "0.01em" }}>{line.trim()}</p>
                       ))}
                     </div>
                   ))}
@@ -444,22 +440,43 @@ function HeartfeltPage() {
     });
   };
 
+  // Hidden audio element rendered once at app root so the source is primed
+  // before any user gesture — required for iOS Safari to play reliably.
+  const audioMount = (
+    <audio
+      ref={registerAudio}
+      src={musicAsset.url}
+      preload="auto"
+      loop
+      playsInline
+      style={{ display: "none" }}
+    />
+  );
+
   if (confirming) {
     return (
       <div style={{ minHeight: "100dvh", display: "flex", alignItems: "center", justifyContent: "center", background: "#150e12", color: "#fff", fontFamily: "Georgia,serif" }}>
+        {audioMount}
         <p style={{ fontStyle: "italic", opacity: 0.85 }}>Confirming your payment…</p>
       </div>
     );
   }
 
   if (giftView && result) {
-    if (showPoem) return <PoemViewer result={result} photo={photo} occasion={occasion} />;
-    return <GiftReveal result={result} photo={photo} occasion={occasion} onOpened={() => setShowPoem(true)} />;
+    return (
+      <>
+        {audioMount}
+        {showPoem
+          ? <PoemViewer result={result} photo={photo} occasion={occasion} />
+          : <GiftReveal result={result} photo={photo} occasion={occasion} onOpened={() => setShowPoem(true)} />}
+      </>
+    );
   }
 
   if (step === "form") {
     return (
       <div style={{ minHeight: "100dvh", background: "linear-gradient(160deg,#FDF6EE,#FAF0E6)", padding: "20px 16px 48px", display: "flex", flexDirection: "column", alignItems: "center", boxSizing: "border-box" }}>
+        {audioMount}
         <div style={{ maxWidth: 440, width: "100%" }}>
           <div style={{ textAlign: "center", marginBottom: 24, marginTop: 8 }}>
             <div style={{ fontSize: 32, marginBottom: 8 }}>🎁</div>
@@ -514,6 +531,7 @@ function HeartfeltPage() {
   const titleShort = result.titleLine.replace("Dear ", "").replace("For ", "").replace("To ", "");
   return (
     <div style={{ minHeight: "100dvh", background: "#150e12", display: "flex", flexDirection: "column", alignItems: "center", padding: "12px 16px 32px", boxSizing: "border-box" }}>
+      {audioMount}
       <div style={{ width: "100%", maxWidth: 400, display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
         <button onClick={() => { stopMusic(); setStep("form"); setResult(null); setShareLink(null); router.invalidate(); }} style={{ background: "none", border: "none", color: "#9a8a8e", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 13, minHeight: 40, padding: "4px 0", fontFamily: "inherit" }}>
           ← Back
