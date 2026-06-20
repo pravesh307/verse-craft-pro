@@ -67,13 +67,23 @@ const OCCASIONS = [
 // We render a hidden <audio> element at app mount so iOS/Android browsers
 // have the source primed. A user-gesture call to play() then works reliably.
 let _audioEl: HTMLAudioElement | null = null;
-function registerAudio(el: HTMLAudioElement | null) { _audioEl = el; }
+function registerAudio(el: HTMLAudioElement | null) {
+  _audioEl = el;
+  if (!el) return;
+  el.volume = 1;
+  el.loop = true;
+  el.preload = "auto";
+  el.setAttribute("playsinline", "true");
+  try { el.load(); } catch {}
+}
 function startMusic() {
   const a = _audioEl;
   if (!a) return;
   try {
+    if (!a.paused) return;
     a.loop = true;
-    a.currentTime = 0;
+    a.muted = false;
+    a.volume = 1;
     const p = a.play();
     if (p && typeof p.then === "function") {
       p.catch((e) => console.warn("Audio play blocked:", e?.name || e));
@@ -86,6 +96,15 @@ function stopMusic() {
   const a = _audioEl;
   if (!a) return;
   try { a.pause(); a.currentTime = 0; } catch {}
+}
+
+function fitPoemLine(line: string) {
+  const len = line.trim().length;
+  if (len > 58) return 10.8;
+  if (len > 50) return 11.6;
+  if (len > 42) return 12.5;
+  if (len > 34) return 13.4;
+  return 14.4;
 }
 
 // ===== Decorative SVGs =====
@@ -256,9 +275,9 @@ function PoemViewer({ result, photo, occasion }: { result: PoemResult; photo: st
                 <Wave color={th.accent} />
                 <div style={{ marginTop: 20, marginBottom: 20, width: "100%" }}>
                   {stanzas.map((s, si) => (
-                    <div key={si} style={{ marginBottom: 22, textAlign: "center" }}>
+                    <div key={si} style={{ marginBottom: 18, textAlign: "center" }}>
                       {s.trim().split("\n").map((line, li) => (
-                        <p key={li} style={{ fontSize: 15, lineHeight: 2, color: th.accent, margin: 0, letterSpacing: "0.01em" }}>{line.trim()}</p>
+                        <p key={li} style={{ fontSize: fitPoemLine(line), lineHeight: 1.9, color: th.accent, margin: 0, letterSpacing: 0, whiteSpace: "nowrap", overflow: "visible" }}>{line.trim()}</p>
                       ))}
                     </div>
                   ))}
@@ -446,10 +465,12 @@ function HeartfeltPage() {
     <audio
       ref={registerAudio}
       src={musicAsset.url}
+      controls
       preload="auto"
       loop
       playsInline
-      style={{ display: "none" }}
+      aria-label="Background music"
+      style={{ position: "fixed", left: 12, bottom: 12, width: 44, height: 36, opacity: 0.18, zIndex: 50 }}
     />
   );
 
