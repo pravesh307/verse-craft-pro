@@ -404,7 +404,6 @@ function HeartfeltPage() {
     setError(null);
     setShareLink(null);
     startMusic();
-    window.setTimeout(() => setMusicPlaying(isMusicPlaying()), 350);
     try {
       const occ = OCCASIONS.find((o) => o.id === occasion);
       const themeHint = occ?.themeHint ?? "gratitude";
@@ -457,29 +456,14 @@ function HeartfeltPage() {
     });
   };
 
-  // Hidden audio element rendered once at app root so the source is primed
-  // before any user gesture — required for iOS Safari to play reliably.
-  const audioMount = (
-    <audio
-      ref={registerAudio}
-      src={musicAsset.url}
-      preload="auto"
-      loop
-      playsInline
-      aria-label="Background music"
-      style={{ position: "fixed", left: 0, top: 0, width: 1, height: 1, opacity: 0, pointerEvents: "none", zIndex: -1 }}
-    />
-  );
-
   const musicButton = (loading || result || giftView) && !musicPlaying ? (
-    <button onClick={() => { startMusic(); window.setTimeout(() => setMusicPlaying(isMusicPlaying()), 250); }} style={{ position: "fixed", right: 12, bottom: 12, zIndex: 80, background: "#3D1F2A", color: "#fff", border: "none", borderRadius: 999, padding: "9px 13px", fontSize: 12, fontStyle: "italic", boxShadow: "0 8px 24px rgba(0,0,0,0.22)", cursor: "pointer", fontFamily: "inherit" }}>
+    <button onClick={startMusic} style={{ position: "fixed", right: 12, bottom: 12, zIndex: 80, background: "#3D1F2A", color: "#fff", border: "none", borderRadius: 999, padding: "9px 13px", fontSize: 12, fontStyle: "italic", boxShadow: "0 8px 24px rgba(0,0,0,0.22)", cursor: "pointer", fontFamily: "inherit" }}>
       ♪ Play music
     </button>
   ) : null;
 
   const withAudio = (content: ReactNode) => (
     <>
-      {audioMount}
       {content}
       {musicButton}
     </>
@@ -497,7 +481,7 @@ function HeartfeltPage() {
     return withAudio(
       showPoem
         ? <PoemViewer result={result} photo={photo} occasion={occasion} />
-        : <GiftReveal result={result} photo={photo} occasion={occasion} onOpened={() => setShowPoem(true)} />
+        : <GiftReveal result={result} photo={photo} occasion={occasion} onOpened={() => setShowPoem(true)} onPlayMusic={startMusic} />
     );
   }
 
