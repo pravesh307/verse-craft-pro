@@ -297,21 +297,46 @@ function HeartfeltPage() {
   const [showPoem, setShowPoem] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [musicPlaying, setMusicPlaying] = useState(false);
+  const [musicBlocked, setMusicBlocked] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const startMusic = useCallback(() => {
+  const unlockMusic = useCallback((audible = false) => {
     if (typeof window === "undefined") return;
     const audio = audioRef.current ?? new Audio(musicAsset.url);
     audioRef.current = audio;
     audio.loop = true;
     audio.preload = "auto";
     audio.muted = false;
-    audio.volume = 1;
+    audio.volume = audible ? 1 : 0.01;
     audio.setAttribute("playsinline", "true");
+    (window as unknown as { __heartfeltAudioDebug?: Record<string, unknown> }).__heartfeltAudioDebug = {
+      attemptedAt: new Date().toISOString(),
+      audible,
+      src: audio.src,
+    };
     audio.play()
-      .then(() => setMusicPlaying(true))
-      .catch(() => setMusicPlaying(false));
+      .then(() => {
+        setMusicPlaying(true);
+        setMusicBlocked(false);
+      })
+      .catch((error: unknown) => {
+        console.warn("Heartfelt music blocked", error);
+        setMusicPlaying(false);
+        setMusicBlocked(true);
+      });
   }, []);
+
+  const makeMusicAudible = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio || audio.paused) {
+      unlockMusic(true);
+      return;
+    }
+    audio.muted = false;
+    audio.volume = 1;
+    setMusicPlaying(true);
+    setMusicBlocked(false);
+  }, [unlockMusic]);
 
   const stopMusic = useCallback(() => {
     const audio = audioRef.current;
