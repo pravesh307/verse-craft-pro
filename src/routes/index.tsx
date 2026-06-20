@@ -476,30 +476,32 @@ function HeartfeltPage() {
     />
   );
 
+  const withAudio = (content: React.ReactNode) => (
+    <>
+      {audioMount}
+      {content}
+    </>
+  );
+
   if (confirming) {
-    return (
+    return withAudio(
       <div style={{ minHeight: "100dvh", display: "flex", alignItems: "center", justifyContent: "center", background: "#150e12", color: "#fff", fontFamily: "Georgia,serif" }}>
-        {audioMount}
         <p style={{ fontStyle: "italic", opacity: 0.85 }}>Confirming your payment…</p>
       </div>
     );
   }
 
   if (giftView && result) {
-    return (
-      <>
-        {audioMount}
-        {showPoem
-          ? <PoemViewer result={result} photo={photo} occasion={occasion} />
-          : <GiftReveal result={result} photo={photo} occasion={occasion} onOpened={() => setShowPoem(true)} />}
-      </>
+    return withAudio(
+      showPoem
+        ? <PoemViewer result={result} photo={photo} occasion={occasion} />
+        : <GiftReveal result={result} photo={photo} occasion={occasion} onOpened={() => setShowPoem(true)} />
     );
   }
 
   if (step === "form") {
-    return (
+    return withAudio(
       <div style={{ minHeight: "100dvh", background: "linear-gradient(160deg,#FDF6EE,#FAF0E6)", padding: "20px 16px 48px", display: "flex", flexDirection: "column", alignItems: "center", boxSizing: "border-box" }}>
-        {audioMount}
         <div style={{ maxWidth: 440, width: "100%" }}>
           <div style={{ textAlign: "center", marginBottom: 24, marginTop: 8 }}>
             <div style={{ fontSize: 32, marginBottom: 8 }}>🎁</div>
@@ -552,9 +554,8 @@ function HeartfeltPage() {
   if (!result) return null;
   const th = THEMES[result.theme] || THEMES.gratitude;
   const titleShort = result.titleLine.replace("Dear ", "").replace("For ", "").replace("To ", "");
-  return (
+  return withAudio(
     <div style={{ minHeight: "100dvh", background: "#150e12", display: "flex", flexDirection: "column", alignItems: "center", padding: "12px 16px 32px", boxSizing: "border-box" }}>
-      {audioMount}
       <div style={{ width: "100%", maxWidth: 400, display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
         <button onClick={() => { stopMusic(); setStep("form"); setResult(null); setShareLink(null); router.invalidate(); }} style={{ background: "none", border: "none", color: "#9a8a8e", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 13, minHeight: 40, padding: "4px 0", fontFamily: "inherit" }}>
           ← Back
