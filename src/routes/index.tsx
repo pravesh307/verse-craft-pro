@@ -462,8 +462,23 @@ function HeartfeltPage() {
     </button>
   ) : null;
 
+  const audioMount = (
+    <audio
+      ref={audioRef}
+      src={musicAsset.url}
+      preload="auto"
+      loop
+      playsInline
+      onPlay={() => setMusicPlaying(true)}
+      onPause={() => setMusicPlaying(false)}
+      onError={() => setMusicPlaying(false)}
+      style={{ position: "fixed", left: 0, top: 0, width: 1, height: 1, opacity: 0, pointerEvents: "none" }}
+    />
+  );
+
   const withAudio = (content: ReactNode) => (
     <>
+      {audioMount}
       {content}
       {musicButton}
     </>
