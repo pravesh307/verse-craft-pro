@@ -241,9 +241,10 @@ function PoemViewer({ result, photo, occasion, musicPlaying, onPlayMusic }: { re
           ) : (
             <div style={{ width: "100%", height: "100%", overflowY: "auto", WebkitOverflowScrolling: "touch", background: `linear-gradient(175deg,${th.to},${th.from} 55%,${th.to})` }}>
               {photo && (
-                <div style={{ width: "100%", height: 240, overflow: "hidden", flexShrink: 0, position: "relative" }}>
-                  <img src={photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top", display: "block", filter: "brightness(0.88) saturate(1.05)" }} />
-                  <div style={{ position: "absolute", inset: 0, background: `linear-gradient(to bottom,transparent 0%,transparent 50%,${th.from} 100%)` }} />
+                <div style={{ width: "100%", height: 260, overflow: "hidden", flexShrink: 0, position: "relative", background: "#000" }}>
+                  <img src={photo} alt="" aria-hidden style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", filter: "blur(28px) brightness(0.55) saturate(1.1)", transform: "scale(1.15)" }} />
+                  <img src={photo} alt="" style={{ position: "relative", width: "100%", height: "100%", objectFit: "contain", display: "block", zIndex: 1 }} />
+                  <div style={{ position: "absolute", inset: 0, background: `linear-gradient(to bottom,transparent 0%,transparent 65%,${th.from} 100%)`, zIndex: 2, pointerEvents: "none" }} />
                 </div>
               )}
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: photo ? "8px 22px 44px" : "34px 22px 44px", boxSizing: "border-box" }}>
