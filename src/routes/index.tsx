@@ -254,11 +254,11 @@ function PoemViewer({ result, photo, occasion }: { result: PoemResult; photo: st
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: photo ? "8px 22px 44px" : "34px 22px 44px", boxSizing: "border-box" }}>
                 <p style={{ fontSize: 17, fontStyle: "italic", color: th.accent, marginBottom: 12, textAlign: "center" }}>{result.titleLine},</p>
                 <Wave color={th.accent} />
-                <div style={{ marginTop: 16, marginBottom: 16, width: "100%" }}>
+                <div style={{ marginTop: 20, marginBottom: 20, width: "100%" }}>
                   {stanzas.map((s, si) => (
-                    <div key={si} style={{ marginBottom: 16, textAlign: "center" }}>
+                    <div key={si} style={{ marginBottom: 22, textAlign: "center" }}>
                       {s.trim().split("\n").map((line, li) => (
-                        <p key={li} style={{ fontSize: 14.5, lineHeight: 1.88, color: th.accent, margin: 0 }}>{line.trim()}</p>
+                        <p key={li} style={{ fontSize: 15, lineHeight: 2, color: th.accent, margin: 0, letterSpacing: "0.01em" }}>{line.trim()}</p>
                       ))}
                     </div>
                   ))}
