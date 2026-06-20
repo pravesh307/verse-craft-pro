@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { generateText, Output } from "ai";
+import { generateText } from "ai";
 import { z } from "zod";
 import { createLovableAiGatewayProvider } from "./ai-gateway.server";
 
@@ -67,12 +67,21 @@ Return ONLY the structured object.`;
     const gateway = createLovableAiGatewayProvider(key);
 
     try {
-      const { experimental_output: output } = await generateText({
+      const { text } = await generateText({
         model: gateway("openai/gpt-5-mini"),
-        prompt,
-        experimental_output: Output.object({ schema: PoemSchema }),
+        prompt: prompt + "\n\nReturn ONLY valid JSON, no markdown fences, with this exact shape: {\"theme\": <one of the listed theme ids>, \"titleLine\": <string>, \"poem\": <string with stanzas separated by blank lines>, \"closing\": <string>}",
       });
-      return { ...output, sender: data.senderName.trim() || "" };
+
+      // Strip code fences if model added them
+      let cleaned = text.trim();
+      const fenceMatch = cleaned.match(/```(?:json)?\s*([\s\S]*?)```/);
+      if (fenceMatch) cleaned = fenceMatch[1].trim();
+      const firstBrace = cleaned.indexOf("{");
+      const lastBrace = cleaned.lastIndexOf("}");
+      if (firstBrace !== -1 && lastBrace !== -1) cleaned = cleaned.slice(firstBrace, lastBrace + 1);
+
+      const parsed = PoemSchema.parse(JSON.parse(cleaned));
+      return { ...parsed, sender: data.senderName.trim() || "" };
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       console.error("Poem generation failed", msg);
