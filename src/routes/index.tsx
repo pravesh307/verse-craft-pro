@@ -100,11 +100,13 @@ function stopMusic() {
 
 function fitPoemLine(line: string) {
   const len = line.trim().length;
-  if (len > 58) return 10.8;
-  if (len > 50) return 11.6;
-  if (len > 42) return 12.5;
-  if (len > 34) return 13.4;
-  return 14.4;
+  if (len >= 70) return 8.4;
+  if (len >= 58) return 9.2;
+  if (len >= 48) return 10.0;
+  if (len >= 38) return 11.2;
+  if (len >= 30) return 12.5;
+  if (len >= 22) return 13.6;
+  return 15.0;
 }
 
 // ===== Decorative SVGs =====
@@ -277,7 +279,7 @@ function PoemViewer({ result, photo, occasion }: { result: PoemResult; photo: st
                   {stanzas.map((s, si) => (
                     <div key={si} style={{ marginBottom: 18, textAlign: "center" }}>
                       {s.trim().split("\n").map((line, li) => (
-                        <p key={li} style={{ fontSize: fitPoemLine(line), lineHeight: 1.9, color: th.accent, margin: 0, letterSpacing: 0, whiteSpace: "nowrap", overflow: "visible" }}>{line.trim()}</p>
+                        <p key={li} style={{ fontSize: fitPoemLine(line), lineHeight: 1.9, color: th.accent, margin: 0, letterSpacing: "0.01em", whiteSpace: "nowrap" }}>{line.trim()}</p>
                       ))}
                     </div>
                   ))}
@@ -407,6 +409,7 @@ function HeartfeltPage() {
     setLoading(true);
     setError(null);
     setShareLink(null);
+    startMusic();
     try {
       const occ = OCCASIONS.find((o) => o.id === occasion);
       const themeHint = occ?.themeHint ?? "gratitude";
@@ -465,12 +468,11 @@ function HeartfeltPage() {
     <audio
       ref={registerAudio}
       src={musicAsset.url}
-      controls
       preload="auto"
       loop
       playsInline
       aria-label="Background music"
-      style={{ position: "fixed", left: 12, bottom: 12, width: 44, height: 36, opacity: 0.18, zIndex: 50 }}
+      style={{ position: "fixed", left: 0, top: 0, width: 1, height: 1, opacity: 0, pointerEvents: "none", zIndex: -1 }}
     />
   );
 
