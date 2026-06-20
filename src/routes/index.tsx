@@ -100,6 +100,11 @@ function stopMusic() {
   try { a.pause(); a.currentTime = 0; } catch {}
 }
 
+function isMusicPlaying() {
+  const a = _audioEl ?? _audioObj;
+  return Boolean(a && !a.paused && !a.ended && a.currentTime > 0);
+}
+
 function fitPoemLine(line: string) {
   const len = line.trim().length;
   if (len >= 70) return 8.4;
