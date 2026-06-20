@@ -222,7 +222,7 @@ function PoemViewer({ result, photo, occasion, musicPlaying, onPlayMusic }: { re
               <div style={{ position: "absolute", inset: 14, border: `1px solid ${th.accent}`, borderRadius: 4, opacity: 0.2, pointerEvents: "none" }} />
               {photo && (
                 <div style={{ width: 108, height: 108, borderRadius: "50%", overflow: "hidden", marginBottom: 18, border: `4px solid ${th.accent}`, flexShrink: 0 }}>
-                  <img src={photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  <img src={photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top" }} />
                 </div>
               )}
               {occ && <p style={{ fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: th.accent, opacity: 0.6, marginBottom: 10, fontStyle: "italic" }}>{occ.emoji} {occ.chip}</p>}
@@ -241,9 +241,9 @@ function PoemViewer({ result, photo, occasion, musicPlaying, onPlayMusic }: { re
           ) : (
             <div style={{ width: "100%", height: "100%", overflowY: "auto", WebkitOverflowScrolling: "touch", background: `linear-gradient(175deg,${th.to},${th.from} 55%,${th.to})` }}>
               {photo && (
-                <div style={{ width: "100%", height: 195, overflow: "hidden", flexShrink: 0, position: "relative" }}>
-                  <img src={photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block", filter: "brightness(0.82)" }} />
-                  <div style={{ position: "absolute", inset: 0, background: `linear-gradient(to bottom,transparent 38%,${th.from} 100%)` }} />
+                <div style={{ width: "100%", height: 240, overflow: "hidden", flexShrink: 0, position: "relative" }}>
+                  <img src={photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top", display: "block", filter: "brightness(0.88) saturate(1.05)" }} />
+                  <div style={{ position: "absolute", inset: 0, background: `linear-gradient(to bottom,transparent 0%,transparent 50%,${th.from} 100%)` }} />
                 </div>
               )}
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: photo ? "8px 22px 44px" : "34px 22px 44px", boxSizing: "border-box" }}>
