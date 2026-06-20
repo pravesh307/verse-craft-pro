@@ -1,6 +1,6 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import musicAsset from "@/assets/music.mp3.asset.json";
 import {
   generatePoem,
@@ -101,7 +101,7 @@ function Floral({ flip, flipY, color, opacity }: { flip?: boolean; flipY?: boole
 }
 
 // ===== Gift Reveal =====
-function GiftReveal({ result, occasion, onOpened }: { result: PoemResult; photo: string | null; occasion: string | null; onOpened: () => void }) {
+function GiftReveal({ result, occasion, onOpened, onPlayMusic }: { result: PoemResult; photo: string | null; occasion: string | null; onOpened: () => void; onPlayMusic: () => void }) {
   const th = THEMES[result.theme] || THEMES.gratitude;
   const occ = OCCASIONS.find((o) => o.id === occasion);
   const [opened, setOpened] = useState(false);
@@ -109,7 +109,7 @@ function GiftReveal({ result, occasion, onOpened }: { result: PoemResult; photo:
 
   const handleOpen = () => {
     if (opened) return;
-    startMusic();
+    onPlayMusic();
     setOpened(true);
     setBurst(true);
     setTimeout(() => onOpened(), 950);
