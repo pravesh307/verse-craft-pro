@@ -465,10 +465,12 @@ function HeartfeltPage() {
     <audio
       ref={registerAudio}
       src={musicAsset.url}
+      controls
       preload="auto"
       loop
       playsInline
-      style={{ display: "none" }}
+      aria-label="Background music"
+      style={{ position: "fixed", left: 12, bottom: 12, width: 44, height: 36, opacity: 0.18, zIndex: 50 }}
     />
   );
 
