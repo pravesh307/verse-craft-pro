@@ -300,10 +300,31 @@ function HeartfeltPage() {
   const [musicBlocked, setMusicBlocked] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  const ensureAudio = useCallback(() => {
+    if (audioRef.current) return audioRef.current;
+    const audio = document.createElement("audio");
+    audio.src = musicAsset.url;
+    audio.loop = true;
+    audio.preload = "auto";
+    audio.setAttribute("playsinline", "true");
+    audio.style.position = "fixed";
+    audio.style.left = "0";
+    audio.style.top = "0";
+    audio.style.width = "1px";
+    audio.style.height = "1px";
+    audio.style.opacity = "0";
+    audio.style.pointerEvents = "none";
+    audio.addEventListener("playing", () => setMusicPlaying(true));
+    audio.addEventListener("pause", () => setMusicPlaying(false));
+    audio.addEventListener("error", () => setMusicBlocked(true));
+    document.body.appendChild(audio);
+    audioRef.current = audio;
+    return audio;
+  }, []);
+
   const unlockMusic = useCallback((audible = false) => {
     if (typeof window === "undefined") return;
-    const audio = audioRef.current ?? new Audio(musicAsset.url);
-    audioRef.current = audio;
+    const audio = ensureAudio();
     audio.loop = true;
     audio.preload = "auto";
     audio.muted = false;
@@ -324,7 +345,7 @@ function HeartfeltPage() {
         setMusicPlaying(false);
         setMusicBlocked(true);
       });
-  }, []);
+  }, [ensureAudio]);
 
   const makeMusicAudible = useCallback(() => {
     const audio = audioRef.current;
@@ -347,7 +368,9 @@ function HeartfeltPage() {
   }, []);
 
   useEffect(() => () => {
-    audioRef.current?.pause();
+    const audio = audioRef.current;
+    audio?.pause();
+    audio?.remove();
     audioRef.current = null;
   }, []);
 
@@ -488,23 +511,8 @@ function HeartfeltPage() {
     </button>
   ) : null;
 
-  const audioMount = (
-    <audio
-      ref={audioRef}
-      src={musicAsset.url}
-      preload="auto"
-      loop
-      playsInline
-      onPlay={() => setMusicPlaying(true)}
-      onPause={() => setMusicPlaying(false)}
-      onError={() => setMusicPlaying(false)}
-      style={{ position: "fixed", left: 0, top: 0, width: 1, height: 1, opacity: 0, pointerEvents: "none" }}
-    />
-  );
-
   const withAudio = (content: ReactNode) => (
     <>
-      {audioMount}
       {content}
       {musicButton}
     </>
