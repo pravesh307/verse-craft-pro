@@ -541,7 +541,7 @@ function HeartfeltPage() {
               <input id="fphoto" type="file" accept="image/*" onChange={handlePhoto} style={{ display: "none" }} />
               {photo && <img src={photo} alt="" style={{ marginTop: 8, width: 64, height: 64, borderRadius: 12, objectFit: "cover" }} />}
             </div>
-            <button onClick={onGenerate} disabled={loading} style={{ width: "100%", background: "#3D1F2A", color: "#fff", border: "none", borderRadius: 14, padding: "15px", fontSize: 16, fontStyle: "italic", cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.7 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, minHeight: 52, fontFamily: "inherit" }}>
+            <button onPointerDown={() => { if (!loading) startMusic(); }} onClick={onGenerate} disabled={loading} style={{ width: "100%", background: "#3D1F2A", color: "#fff", border: "none", borderRadius: 14, padding: "15px", fontSize: 16, fontStyle: "italic", cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.7 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, minHeight: 52, fontFamily: "inherit" }}>
               {loading ? "Writing your poem…" : "🎁 Preview for free"}
             </button>
             {error && <p style={{ fontSize: 12, color: "#b91c1c", textAlign: "center" }}>{error}</p>}
