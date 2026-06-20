@@ -100,11 +100,13 @@ function stopMusic() {
 
 function fitPoemLine(line: string) {
   const len = line.trim().length;
-  if (len > 58) return 10.8;
-  if (len > 50) return 11.6;
-  if (len > 42) return 12.5;
-  if (len > 34) return 13.4;
-  return 14.4;
+  if (len >= 70) return 8.4;
+  if (len >= 58) return 9.2;
+  if (len >= 48) return 10.0;
+  if (len >= 38) return 11.2;
+  if (len >= 30) return 12.5;
+  if (len >= 22) return 13.6;
+  return 15.0;
 }
 
 // ===== Decorative SVGs =====
