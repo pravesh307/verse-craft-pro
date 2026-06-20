@@ -64,19 +64,16 @@ const OCCASIONS = [
 ];
 
 // ===== Audio (mobile-safe) =====
-let _audio: HTMLAudioElement | null = null;
+// We render a hidden <audio> element at app mount so iOS/Android browsers
+// have the source primed. A user-gesture call to play() then works reliably.
+let _audioEl: HTMLAudioElement | null = null;
+function registerAudio(el: HTMLAudioElement | null) { _audioEl = el; }
 function startMusic() {
+  const a = _audioEl;
+  if (!a) return;
   try {
-    if (_audio) {
-      _audio.pause();
-      _audio = null;
-    }
-    const a = new Audio(musicAsset.url);
     a.loop = true;
-    a.preload = "auto";
-    // iOS Safari ignores the .volume setter; we let it play at its default volume.
-    // No fade — relying on setInterval to ramp volume doesn't work on iOS and can fail silently.
-    _audio = a;
+    a.currentTime = 0;
     const p = a.play();
     if (p && typeof p.then === "function") {
       p.catch((e) => console.warn("Audio play blocked:", e?.name || e));
@@ -86,10 +83,9 @@ function startMusic() {
   }
 }
 function stopMusic() {
-  if (_audio) {
-    try { _audio.pause(); } catch {}
-    _audio = null;
-  }
+  const a = _audioEl;
+  if (!a) return;
+  try { a.pause(); a.currentTime = 0; } catch {}
 }
 
 // ===== Decorative SVGs =====
