@@ -559,18 +559,8 @@ function HeartfeltPage() {
               </div>
             ))}
             <div>
-              <label style={{ fontSize: 11, color: "#78716c", display: "block", marginBottom: 7, letterSpacing: "0.07em", textTransform: "uppercase" }}>Occasion</label>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                {OCCASIONS.map((o) => (
-                  <button key={o.id} type="button" onClick={() => setOccasion(occasion === o.id ? null : o.id)} style={{ fontSize: 13, padding: "8px 14px", borderRadius: 999, border: "1px solid", cursor: "pointer", minHeight: 38, background: occasion === o.id ? "#3D1F2A" : "#fff", color: occasion === o.id ? "#fff" : "#78716c", borderColor: occasion === o.id ? "#3D1F2A" : "#e7e5e4", fontFamily: "inherit" }}>
-                    {o.emoji} {o.chip}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div>
-              <label style={{ fontSize: 11, color: "#78716c", display: "block", marginBottom: 5, letterSpacing: "0.07em", textTransform: "uppercase" }}>Tell the AI the situation</label>
-              <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={4} placeholder="The more detail the more personal. e.g. Hari is my best friend who moved abroad. We grew up together and I miss him every day." style={{ width: "100%", border: "1px solid #e7e5e4", borderRadius: 12, padding: "13px 14px", fontSize: 14, color: "#3D1F2A", resize: "none", outline: "none", boxSizing: "border-box", lineHeight: 1.65, fontFamily: "inherit" }} />
+              <label style={{ fontSize: 11, color: "#78716c", display: "block", marginBottom: 5, letterSpacing: "0.07em", textTransform: "uppercase" }}>You tell the situation</label>
+              <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={4} placeholder="Who are they to you? A memory, a reason, a feeling you want to capture. The more you share, the more personal the poem." style={{ width: "100%", border: "1px solid #e7e5e4", borderRadius: 12, padding: "13px 14px", fontSize: 14, color: "#3D1F2A", resize: "none", outline: "none", boxSizing: "border-box", lineHeight: 1.65, fontFamily: "inherit" }} />
             </div>
             <div>
               <label htmlFor="fphoto" style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14, color: "#78716c", border: "1px dashed #d6d3d1", borderRadius: 12, padding: "13px 14px", cursor: "pointer", minHeight: 48 }}>
