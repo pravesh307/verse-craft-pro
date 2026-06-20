@@ -197,13 +197,8 @@ const GetGiftInput = z.object({ id: z.string() });
 export const getGift = createServerFn({ method: "GET" })
   .inputValidator((d: unknown) => GetGiftInput.parse(d))
   .handler(async ({ data }) => {
-    const { createClient } = await import("@supabase/supabase-js");
-    const supabase = createClient(
-      process.env.SUPABASE_URL!,
-      process.env.SUPABASE_PUBLISHABLE_KEY!,
-      { auth: { storage: undefined, persistSession: false, autoRefreshToken: false } },
-    );
-    const { data: row, error } = await supabase
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: row, error } = await supabaseAdmin
       .from("gifts")
       .select("id, poem, photo, occasion, sender, recipient")
       .eq("id", data.id)
@@ -215,3 +210,4 @@ export const getGift = createServerFn({ method: "GET" })
     }
     return row;
   });
+
