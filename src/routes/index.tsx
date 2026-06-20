@@ -297,6 +297,34 @@ function HeartfeltPage() {
   const [showPoem, setShowPoem] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [musicPlaying, setMusicPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const startMusic = useCallback(() => {
+    if (typeof window === "undefined") return;
+    const audio = audioRef.current ?? new Audio(musicAsset.url);
+    audioRef.current = audio;
+    audio.loop = true;
+    audio.preload = "auto";
+    audio.muted = false;
+    audio.volume = 1;
+    audio.setAttribute("playsinline", "true");
+    audio.play()
+      .then(() => setMusicPlaying(true))
+      .catch(() => setMusicPlaying(false));
+  }, []);
+
+  const stopMusic = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.pause();
+    audio.currentTime = 0;
+    setMusicPlaying(false);
+  }, []);
+
+  useEffect(() => () => {
+    audioRef.current?.pause();
+    audioRef.current = null;
+  }, []);
 
   // On mount: handle ?gift=ID (recipient) or ?paid=1&gift=ID&session_id=... (sender just paid)
   useEffect(() => {
