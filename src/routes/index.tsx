@@ -188,8 +188,17 @@ function PoemViewer({ result, photo, occasion, musicPlaying, onPlayMusic }: { re
   };
 
   return (
-    <div style={{ minHeight: "100dvh", background: "#150e12", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "12px 16px 28px", boxSizing: "border-box" }}>
+    <div style={{ minHeight: "100dvh", background: "#150e12", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "12px 16px 28px", boxSizing: "border-box", position: "relative" }}>
       <div style={{ width: "100%", maxWidth: 360, position: "relative" }}>
+        {onPlayMusic && !musicPlaying && (
+          <button
+            onClick={(e) => { e.stopPropagation(); onPlayMusic(); }}
+            aria-label="Play music"
+            style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 84, height: 84, borderRadius: "50%", background: "rgba(0,0,0,0.6)", border: "2px solid rgba(255,255,255,0.9)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", zIndex: 30, boxShadow: "0 12px 36px rgba(0,0,0,0.55)" }}
+          >
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z" /></svg>
+          </button>
+        )}
         <div
           onTouchStart={(e) => { touchX.current = e.touches[0].clientX; }}
           onTouchEnd={(e) => {
