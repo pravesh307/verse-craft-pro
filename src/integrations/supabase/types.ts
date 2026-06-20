@@ -14,7 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      gifts: {
+        Row: {
+          created_at: string
+          id: string
+          occasion: string | null
+          paid: boolean
+          photo: string | null
+          poem: Json
+          recipient: string | null
+          sender: string | null
+          stripe_session_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          occasion?: string | null
+          paid?: boolean
+          photo?: string | null
+          poem: Json
+          recipient?: string | null
+          sender?: string | null
+          stripe_session_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          occasion?: string | null
+          paid?: boolean
+          photo?: string | null
+          poem?: Json
+          recipient?: string | null
+          sender?: string | null
+          stripe_session_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
