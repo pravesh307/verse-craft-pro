@@ -216,14 +216,8 @@ function PoemViewer({ result, photo, occasion, musicPlaying, onPlayMusic }: { re
               <Wave color={th.accent} />
               <p style={{ marginTop: 12, fontSize: 10, letterSpacing: "0.16em", textTransform: "uppercase", color: th.accent, opacity: 0.4 }}>A message from the heart</p>
 
-              <div style={{ position: "absolute", bottom: 20, right: 20, display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
-                <svg width="34" height="34" viewBox="0 0 34 34">
-                  <circle cx="17" cy="17" r="14" fill="none" stroke={th.accent} strokeWidth="2" opacity="0.15" />
-                  <circle cx="17" cy="17" r="14" fill="none" stroke={th.accent} strokeWidth="2.5" opacity="0.65" strokeDasharray={dash} strokeDashoffset={dash * (countdown / 3)} strokeLinecap="round" transform="rotate(-90 17 17)" style={{ transition: "stroke-dashoffset 1s linear" }} />
-                  <text x="17" y="21" textAnchor="middle" fontSize="11" fill={th.accent} fontFamily="Georgia,serif" opacity="0.8">{countdown}</text>
-                </svg>
-                <p style={{ fontSize: 8, color: th.accent, opacity: 0.35, margin: 0 }}>swipe</p>
-              </div>
+              <p style={{ position: "absolute", bottom: 18, right: 20, fontSize: 9, letterSpacing: "0.18em", textTransform: "uppercase", color: th.accent, opacity: 0.4, margin: 0 }}>swipe →</p>
+
             </div>
           ) : (
             <div style={{ width: "100%", height: "100%", overflowY: "auto", WebkitOverflowScrolling: "touch", background: `linear-gradient(175deg,${th.to},${th.from} 55%,${th.to})` }}>
