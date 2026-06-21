@@ -151,7 +151,7 @@ export function GiftReveal({ result, occasion, onOpened, onPlayMusic }: { result
 }
 
 // ===== Poem viewer =====
-function PoemViewer({ result, photo, occasion, musicPlaying, onPlayMusic }: { result: PoemResult; photo: string | null; occasion: string | null; musicPlaying?: boolean; onPlayMusic?: () => void }) {
+export function PoemViewer({ result, photo, occasion, musicPlaying, onPlayMusic }: { result: PoemResult; photo: string | null; occasion: string | null; musicPlaying?: boolean; onPlayMusic?: () => void }) {
   const [slide, setSlide] = useState(0);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const touchX = useRef<number | null>(null);
