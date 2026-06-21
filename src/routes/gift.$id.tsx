@@ -40,8 +40,7 @@ export const Route = createFileRoute("/gift/$id")({
         { property: "og:title", content: title },
         { property: "og:description", content: description },
         { property: "og:image", content: ogImage },
-        { property: "og:image:width", content: "1216" },
-        { property: "og:image:height", content: "640" },
+
         { property: "og:url", content: url },
         { property: "og:site_name", content: "Heartfelt" },
         { name: "twitter:card", content: "summary_large_image" },
