@@ -10,11 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as GiftIdRouteImport } from './routes/gift.$id'
 import { Route as ApiPublicOgIdRouteImport } from './routes/api/public/og.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GiftIdRoute = GiftIdRouteImport.update({
+  id: '/gift/$id',
+  path: '/gift/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicOgIdRoute = ApiPublicOgIdRouteImport.update({
@@ -25,27 +31,31 @@ const ApiPublicOgIdRoute = ApiPublicOgIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/gift/$id': typeof GiftIdRoute
   '/api/public/og/$id': typeof ApiPublicOgIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/gift/$id': typeof GiftIdRoute
   '/api/public/og/$id': typeof ApiPublicOgIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/gift/$id': typeof GiftIdRoute
   '/api/public/og/$id': typeof ApiPublicOgIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/public/og/$id'
+  fullPaths: '/' | '/gift/$id' | '/api/public/og/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/public/og/$id'
-  id: '__root__' | '/' | '/api/public/og/$id'
+  to: '/' | '/gift/$id' | '/api/public/og/$id'
+  id: '__root__' | '/' | '/gift/$id' | '/api/public/og/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  GiftIdRoute: typeof GiftIdRoute
   ApiPublicOgIdRoute: typeof ApiPublicOgIdRoute
 }
 
@@ -56,6 +66,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gift/$id': {
+      id: '/gift/$id'
+      path: '/gift/$id'
+      fullPath: '/gift/$id'
+      preLoaderRoute: typeof GiftIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/og/$id': {
@@ -70,6 +87,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  GiftIdRoute: GiftIdRoute,
   ApiPublicOgIdRoute: ApiPublicOgIdRoute,
 }
 export const routeTree = rootRouteImport
