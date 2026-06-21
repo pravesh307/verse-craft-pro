@@ -380,7 +380,7 @@ function HeartfeltPage() {
       confirm({ data: { sessionId, giftId } })
         .then((r) => {
           if (r.paid) {
-            const link = `${window.location.origin}/?gift=${giftId}`;
+            const link = `${window.location.origin}/gift/${giftId}`;
             setShareLink(link);
             setPaidSuccess(true);
             try {
@@ -404,7 +404,7 @@ function HeartfeltPage() {
       try {
         const last = localStorage.getItem("heartfelt_last_gift");
         if (last) {
-          setShareLink(`${window.location.origin}/?gift=${last}`);
+          setShareLink(`${window.location.origin}/gift/${last}`);
           setPaidSuccess(true);
         }
       } catch {}
