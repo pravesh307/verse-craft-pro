@@ -507,6 +507,10 @@ function HeartfeltPage() {
     setPaying(true);
     setError(null);
     try {
+      try {
+        localStorage.setItem("heartfelt_last_recipient", recipientName.trim());
+        if (senderEmail.trim()) localStorage.setItem("heartfelt_last_sender_email", senderEmail.trim());
+      } catch {}
       const { url } = await startCheckout({
         data: {
           result,
