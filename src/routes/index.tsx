@@ -293,6 +293,7 @@ function HeartfeltPage() {
 
   const [step, setStep] = useState<"form" | "preview">("form");
   const [senderName, setSenderName] = useState("");
+  const [senderEmail, setSenderEmail] = useState("");
   const [recipientName, setRecipientName] = useState("");
   const [description, setDescription] = useState("");
   const [occasion, setOccasion] = useState<string | null>(null);
@@ -302,6 +303,7 @@ function HeartfeltPage() {
   const [result, setResult] = useState<PoemResult | null>(null);
   const [paying, setPaying] = useState(false);
   const [shareLink, setShareLink] = useState<string | null>(null);
+  const [paidSuccess, setPaidSuccess] = useState(false);
   const [copied, setCopied] = useState(false);
   const [giftView, setGiftView] = useState(false);
   const [showPoem, setShowPoem] = useState(false);
