@@ -401,7 +401,12 @@ function HeartfeltPage() {
           if (r.paid) {
             const link = `${window.location.origin}/?gift=${giftId}`;
             setShareLink(link);
-            try { localStorage.setItem("heartfelt_last_gift", giftId); } catch {}
+            setPaidSuccess(true);
+            try {
+              localStorage.setItem("heartfelt_last_gift", giftId);
+              const savedRecipient = localStorage.getItem("heartfelt_last_recipient");
+              if (savedRecipient && !recipientName) setRecipientName(savedRecipient);
+            } catch {}
             // clean url
             window.history.replaceState({}, "", "/");
           } else {
@@ -417,7 +422,10 @@ function HeartfeltPage() {
     if (!giftId) {
       try {
         const last = localStorage.getItem("heartfelt_last_gift");
-        if (last) setShareLink(`${window.location.origin}/?gift=${last}`);
+        if (last) {
+          setShareLink(`${window.location.origin}/?gift=${last}`);
+          setPaidSuccess(true);
+        }
       } catch {}
     }
 
