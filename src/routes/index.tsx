@@ -153,39 +153,25 @@ function GiftReveal({ result, occasion, onOpened, onPlayMusic }: { result: PoemR
 // ===== Poem viewer =====
 function PoemViewer({ result, photo, occasion, musicPlaying, onPlayMusic }: { result: PoemResult; photo: string | null; occasion: string | null; musicPlaying?: boolean; onPlayMusic?: () => void }) {
   const [slide, setSlide] = useState(0);
-  const [countdown, setCountdown] = useState(3);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const countRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const touchX = useRef<number | null>(null);
   const th = THEMES[result.theme] || THEMES.gratitude;
   const stanzas = result.poem.split("\n\n");
   const occ = OCCASIONS.find((o) => o.id === occasion);
-  const dash = 2 * Math.PI * 14;
 
   useEffect(() => {
     if (slide !== 0) return;
-    setCountdown(3);
-    countRef.current = setInterval(() => {
-      setCountdown((p) => {
-        if (p <= 1) {
-          if (countRef.current) clearInterval(countRef.current);
-          return 0;
-        }
-        return p - 1;
-      });
-    }, 1000);
-    timerRef.current = setTimeout(() => setSlide(1), 3000);
+    timerRef.current = setTimeout(() => setSlide(1), 8000);
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
-      if (countRef.current) clearInterval(countRef.current);
     };
   }, [slide]);
 
   const goTo = (n: number) => {
     if (timerRef.current) clearTimeout(timerRef.current);
-    if (countRef.current) clearInterval(countRef.current);
     setSlide(n);
   };
+
 
   return (
     <div style={{ minHeight: "100dvh", background: "#150e12", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "12px 16px 28px", boxSizing: "border-box", position: "relative" }}>
