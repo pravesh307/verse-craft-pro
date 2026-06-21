@@ -139,6 +139,7 @@ export const createCheckout = createServerFn({ method: "POST" })
       payment_method_options: {
         card: { setup_future_usage: undefined },
       },
+      customer_creation: "if_required",
       phone_number_collection: { enabled: false },
       billing_address_collection: "auto",
       line_items: [
