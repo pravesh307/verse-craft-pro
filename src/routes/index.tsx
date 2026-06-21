@@ -101,7 +101,7 @@ function Floral({ flip, flipY, color, opacity }: { flip?: boolean; flipY?: boole
 }
 
 // ===== Gift Reveal =====
-function GiftReveal({ result, occasion, onOpened, onPlayMusic }: { result: PoemResult; photo: string | null; occasion: string | null; onOpened: () => void; onPlayMusic: () => void }) {
+export function GiftReveal({ result, occasion, onOpened, onPlayMusic }: { result: PoemResult; photo: string | null; occasion: string | null; onOpened: () => void; onPlayMusic: () => void }) {
   const th = THEMES[result.theme] || THEMES.gratitude;
   const occ = OCCASIONS.find((o) => o.id === occasion);
   const [opened, setOpened] = useState(false);
