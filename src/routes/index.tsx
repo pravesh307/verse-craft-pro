@@ -562,6 +562,95 @@ function HeartfeltPage() {
     );
   }
 
+  if (paidSuccess && shareLink) {
+    const recipientLabel = recipientName.trim() || "them";
+    const savedEmail = (() => {
+      try { return localStorage.getItem("heartfelt_last_sender_email") || ""; } catch { return ""; }
+    })();
+    const emailTo = senderEmail.trim() || savedEmail;
+    const subject = encodeURIComponent(`Your Heartfelt gift link for ${recipientLabel}`);
+    const body = encodeURIComponent(
+      `Here's your Heartfelt gift link — keep it safe and send it to ${recipientLabel} whenever you're ready:\n\n${shareLink}\n\nWith love,\nHeartfelt 🎁`
+    );
+    const mailto = `mailto:${emailTo}?subject=${subject}&body=${body}`;
+    const waText = encodeURIComponent(`A little something for you 💝 ${shareLink}`);
+    const startOver = () => {
+      try { localStorage.removeItem("heartfelt_last_gift"); } catch {}
+      setPaidSuccess(false);
+      setShareLink(null);
+      setResult(null);
+      setStep("form");
+    };
+    return withAudio(
+      <div style={{ minHeight: "100dvh", background: "linear-gradient(160deg,#150e12,#2a1820)", padding: "32px 18px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", boxSizing: "border-box", color: "#fff", fontFamily: "Georgia,serif" }}>
+        <div style={{ width: "100%", maxWidth: 420, background: "#1e1218", borderRadius: 22, padding: "28px 22px", boxShadow: "0 24px 60px rgba(0,0,0,0.5)", textAlign: "center" }}>
+          <div style={{ fontSize: 44, marginBottom: 10 }}>🎁</div>
+          <h1 style={{ fontSize: 24, fontStyle: "italic", margin: "0 0 6px", color: "#fff" }}>Thank you!</h1>
+          <p style={{ fontSize: 14, opacity: 0.75, margin: "0 0 22px" }}>
+            Your gift link for <span style={{ color: "#F5CFFE", fontStyle: "italic" }}>{recipientLabel}</span> is ready. Save it somewhere safe — this is the only place it lives.
+          </p>
+
+          <div style={{ background: "#2a1820", borderRadius: 12, padding: "12px 14px", fontSize: 12, color: "#e5d4dc", wordBreak: "break-all", marginBottom: 10, textAlign: "left" }}>
+            {shareLink}
+          </div>
+          <button onClick={copyLink} style={{ width: "100%", background: copied ? "#22c55e" : "#9B2242", color: "#fff", border: "none", borderRadius: 12, padding: "13px", fontSize: 15, cursor: "pointer", fontFamily: "inherit", minHeight: 48, marginBottom: 10 }}>
+            {copied ? "✓ Link copied" : "📋 Copy link"}
+          </button>
+
+          {typeof navigator !== "undefined" && typeof navigator.share === "function" && (
+            <button
+              onClick={() => navigator.share({ title: "A Heartfelt gift for you", text: `A little something for you 💝`, url: shareLink }).catch(() => {})}
+              style={{ width: "100%", background: "#3D1F2A", color: "#fff", border: "1px solid #5a3543", borderRadius: 12, padding: "13px", fontSize: 15, cursor: "pointer", fontFamily: "inherit", minHeight: 48, marginBottom: 10 }}
+            >
+              📤 Share…
+            </button>
+          )}
+
+          <div style={{ display: "flex", gap: 8, marginBottom: 18 }}>
+            <a href={`https://wa.me/?text=${waText}`} target="_blank" rel="noreferrer" style={{ flex: 1, background: "#25D366", color: "#fff", border: "none", borderRadius: 12, padding: "12px", fontSize: 14, textDecoration: "none", display: "flex", alignItems: "center", justifyContent: "center", minHeight: 46 }}>
+              WhatsApp
+            </a>
+            <a href={`sms:?&body=${waText}`} style={{ flex: 1, background: "#3D1F2A", color: "#fff", border: "1px solid #5a3543", borderRadius: 12, padding: "12px", fontSize: 14, textDecoration: "none", display: "flex", alignItems: "center", justifyContent: "center", minHeight: 46 }}>
+              SMS
+            </a>
+          </div>
+
+          <div style={{ borderTop: "1px solid #3a2530", paddingTop: 18, marginBottom: 14, textAlign: "left" }}>
+            <p style={{ fontSize: 12, opacity: 0.7, margin: "0 0 8px", textAlign: "center" }}>
+              ✉️ Email the link to yourself so you never lose it
+            </p>
+            <div style={{ display: "flex", gap: 8 }}>
+              <input
+                type="email"
+                value={senderEmail}
+                onChange={(e) => setSenderEmail(e.target.value)}
+                placeholder={savedEmail || "you@example.com"}
+                style={{ flex: 1, border: "1px solid #3a2530", background: "#2a1820", color: "#fff", borderRadius: 10, padding: "11px 12px", fontSize: 14, outline: "none", fontFamily: "inherit" }}
+              />
+              <a
+                href={mailto}
+                onClick={(e) => { if (!emailTo) { e.preventDefault(); setError("Enter an email first"); } else { try { localStorage.setItem("heartfelt_last_sender_email", emailTo); } catch {} } }}
+                style={{ background: "#9B2242", color: "#fff", border: "none", borderRadius: 10, padding: "11px 14px", fontSize: 14, textDecoration: "none", display: "flex", alignItems: "center", justifyContent: "center", minHeight: 44, fontFamily: "inherit" }}
+              >
+                Email me
+              </a>
+            </div>
+          </div>
+
+          <a href={shareLink} target="_blank" rel="noreferrer" style={{ display: "block", textAlign: "center", color: "#F5CFFE", fontSize: 13, fontStyle: "italic", textDecoration: "none", marginBottom: 14 }}>
+            👁 Preview what {recipientLabel} will see →
+          </a>
+
+          <button onClick={startOver} style={{ background: "none", color: "#9a8a8e", border: "none", fontSize: 12, cursor: "pointer", textDecoration: "underline", fontFamily: "inherit" }}>
+            Send another gift
+          </button>
+
+          {error && <p style={{ fontSize: 12, color: "#fca5a5", marginTop: 10 }}>{error}</p>}
+        </div>
+      </div>
+    );
+  }
+
   if (step === "form") {
     return withAudio(
       <div style={{ minHeight: "100dvh", background: "linear-gradient(160deg,#FDF6EE,#FAF0E6)", padding: "20px 16px 48px", display: "flex", flexDirection: "column", alignItems: "center", boxSizing: "border-box" }}>
