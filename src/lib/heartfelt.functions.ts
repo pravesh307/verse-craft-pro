@@ -136,6 +136,11 @@ export const createCheckout = createServerFn({ method: "POST" })
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
+      payment_method_options: {
+        card: { setup_future_usage: undefined },
+      },
+      phone_number_collection: { enabled: false },
+      billing_address_collection: "auto",
       line_items: [
         {
           price_data: {
