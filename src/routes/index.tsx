@@ -153,39 +153,25 @@ function GiftReveal({ result, occasion, onOpened, onPlayMusic }: { result: PoemR
 // ===== Poem viewer =====
 function PoemViewer({ result, photo, occasion, musicPlaying, onPlayMusic }: { result: PoemResult; photo: string | null; occasion: string | null; musicPlaying?: boolean; onPlayMusic?: () => void }) {
   const [slide, setSlide] = useState(0);
-  const [countdown, setCountdown] = useState(3);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const countRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const touchX = useRef<number | null>(null);
   const th = THEMES[result.theme] || THEMES.gratitude;
   const stanzas = result.poem.split("\n\n");
   const occ = OCCASIONS.find((o) => o.id === occasion);
-  const dash = 2 * Math.PI * 14;
 
   useEffect(() => {
     if (slide !== 0) return;
-    setCountdown(3);
-    countRef.current = setInterval(() => {
-      setCountdown((p) => {
-        if (p <= 1) {
-          if (countRef.current) clearInterval(countRef.current);
-          return 0;
-        }
-        return p - 1;
-      });
-    }, 1000);
-    timerRef.current = setTimeout(() => setSlide(1), 3000);
+    timerRef.current = setTimeout(() => setSlide(1), 8000);
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
-      if (countRef.current) clearInterval(countRef.current);
     };
   }, [slide]);
 
   const goTo = (n: number) => {
     if (timerRef.current) clearTimeout(timerRef.current);
-    if (countRef.current) clearInterval(countRef.current);
     setSlide(n);
   };
+
 
   return (
     <div style={{ minHeight: "100dvh", background: "#150e12", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "12px 16px 28px", boxSizing: "border-box", position: "relative" }}>
@@ -221,22 +207,17 @@ function PoemViewer({ result, photo, occasion, musicPlaying, onPlayMusic }: { re
               <div style={{ position: "absolute", bottom: 0, right: 0, pointerEvents: "none" }}><Floral flip flipY color={th.accent} /></div>
               <div style={{ position: "absolute", inset: 14, border: `1px solid ${th.accent}`, borderRadius: 4, opacity: 0.2, pointerEvents: "none" }} />
               {photo && (
-                <div style={{ width: 108, height: 108, borderRadius: "50%", overflow: "hidden", marginBottom: 18, border: `4px solid ${th.accent}`, flexShrink: 0 }}>
-                  <img src={photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top" }} />
+                <div style={{ width: 168, height: 220, borderRadius: 14, overflow: "hidden", marginBottom: 18, border: `3px solid ${th.accent}`, flexShrink: 0, background: th.from, boxShadow: `0 10px 30px ${th.accent}30` }}>
+                  <img src={photo} alt="" style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }} />
                 </div>
               )}
               {occ && <p style={{ fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: th.accent, opacity: 0.6, marginBottom: 10, fontStyle: "italic" }}>{occ.emoji} {occ.chip}</p>}
               <h1 style={{ fontSize: result.titleLine.length > 18 ? 27 : result.titleLine.length > 12 ? 36 : 46, fontWeight: 400, color: th.accent, fontStyle: "italic", textAlign: "center", padding: "0 20px", marginBottom: 18, lineHeight: 1.2 }}>{result.titleLine}</h1>
               <Wave color={th.accent} />
               <p style={{ marginTop: 12, fontSize: 10, letterSpacing: "0.16em", textTransform: "uppercase", color: th.accent, opacity: 0.4 }}>A message from the heart</p>
-              <div style={{ position: "absolute", bottom: 20, right: 20, display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
-                <svg width="34" height="34" viewBox="0 0 34 34">
-                  <circle cx="17" cy="17" r="14" fill="none" stroke={th.accent} strokeWidth="2" opacity="0.15" />
-                  <circle cx="17" cy="17" r="14" fill="none" stroke={th.accent} strokeWidth="2.5" opacity="0.65" strokeDasharray={dash} strokeDashoffset={dash * (countdown / 3)} strokeLinecap="round" transform="rotate(-90 17 17)" style={{ transition: "stroke-dashoffset 1s linear" }} />
-                  <text x="17" y="21" textAnchor="middle" fontSize="11" fill={th.accent} fontFamily="Georgia,serif" opacity="0.8">{countdown}</text>
-                </svg>
-                <p style={{ fontSize: 8, color: th.accent, opacity: 0.35, margin: 0 }}>swipe</p>
-              </div>
+
+              <p style={{ position: "absolute", bottom: 18, right: 20, fontSize: 9, letterSpacing: "0.18em", textTransform: "uppercase", color: th.accent, opacity: 0.4, margin: 0 }}>swipe →</p>
+
             </div>
           ) : (
             <div style={{ width: "100%", height: "100%", overflowY: "auto", WebkitOverflowScrolling: "touch", background: `linear-gradient(175deg,${th.to},${th.from} 55%,${th.to})` }}>
@@ -582,42 +563,55 @@ function HeartfeltPage() {
       setStep("form");
     };
     return withAudio(
-      <div style={{ minHeight: "100dvh", background: "linear-gradient(160deg,#150e12,#2a1820)", padding: "32px 18px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", boxSizing: "border-box", color: "#fff", fontFamily: "Georgia,serif" }}>
-        <div style={{ width: "100%", maxWidth: 420, background: "#1e1218", borderRadius: 22, padding: "28px 22px", boxShadow: "0 24px 60px rgba(0,0,0,0.5)", textAlign: "center" }}>
-          <div style={{ fontSize: 44, marginBottom: 10 }}>🎁</div>
-          <h1 style={{ fontSize: 24, fontStyle: "italic", margin: "0 0 6px", color: "#fff" }}>Thank you!</h1>
-          <p style={{ fontSize: 14, opacity: 0.75, margin: "0 0 22px" }}>
-            Your gift link for <span style={{ color: "#F5CFFE", fontStyle: "italic" }}>{recipientLabel}</span> is ready. Save it somewhere safe — this is the only place it lives.
+      <div style={{ minHeight: "100dvh", background: "radial-gradient(ellipse at top, #3a1828 0%, #150e12 55%, #0a0608 100%)", padding: "32px 18px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", boxSizing: "border-box", color: "#fff", fontFamily: "Georgia,serif", position: "relative", overflow: "hidden" }}>
+        {Array.from({ length: 14 }).map((_, i) => (
+          <div key={i} style={{ position: "absolute", fontSize: 14, opacity: 0.07, left: `${(i * 73) % 95}%`, top: `${(i * 47) % 95}%`, transform: `rotate(${i * 31}deg)`, color: "#F5CFFE", pointerEvents: "none" }}>✦</div>
+        ))}
+        <div style={{ width: "100%", maxWidth: 440, background: "linear-gradient(155deg, rgba(40,20,30,0.95), rgba(25,14,20,0.98))", borderRadius: 26, padding: "32px 24px", boxShadow: "0 30px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(245,207,254,0.08), inset 0 1px 0 rgba(255,255,255,0.05)", textAlign: "center", position: "relative", zIndex: 1 }}>
+          <div style={{ width: 72, height: 72, borderRadius: "50%", background: "linear-gradient(135deg, #9B2242, #6B21A8)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px", fontSize: 36, boxShadow: "0 12px 30px rgba(155,34,66,0.5)" }}>🎁</div>
+          <p style={{ fontSize: 10, letterSpacing: "0.3em", textTransform: "uppercase", color: "#F5CFFE", opacity: 0.6, margin: "0 0 6px" }}>Payment confirmed</p>
+          <h1 style={{ fontSize: 28, fontStyle: "italic", margin: "0 0 8px", color: "#fff", fontWeight: 400 }}>Your gift is ready</h1>
+          <p style={{ fontSize: 14, opacity: 0.7, margin: "0 0 24px", lineHeight: 1.55 }}>
+            A heartfelt link for <span style={{ color: "#F5CFFE", fontStyle: "italic" }}>{recipientLabel}</span> — keep it safe, this is the only place it lives.
           </p>
 
-          <div style={{ background: "#2a1820", borderRadius: 12, padding: "12px 14px", fontSize: 12, color: "#e5d4dc", wordBreak: "break-all", marginBottom: 10, textAlign: "left" }}>
-            {shareLink}
-          </div>
-          <button onClick={copyLink} style={{ width: "100%", background: copied ? "#22c55e" : "#9B2242", color: "#fff", border: "none", borderRadius: 12, padding: "13px", fontSize: 15, cursor: "pointer", fontFamily: "inherit", minHeight: 48, marginBottom: 10 }}>
-            {copied ? "✓ Link copied" : "📋 Copy link"}
+          <a
+            href={shareLink}
+            target="_blank"
+            rel="noreferrer"
+            style={{ display: "block", background: "linear-gradient(135deg, #2a1820, #1a0e14)", border: "1px solid rgba(245,207,254,0.18)", borderRadius: 14, padding: "14px 16px", fontSize: 13, color: "#F5CFFE", wordBreak: "break-all", marginBottom: 14, textAlign: "left", textDecoration: "none", fontFamily: "ui-monospace, monospace", transition: "all 0.2s", cursor: "pointer" }}
+          >
+            🔗 {shareLink}
+          </a>
+
+          <button
+            onClick={copyLink}
+            style={{ width: "100%", background: copied ? "linear-gradient(135deg, #16a34a, #22c55e)" : "linear-gradient(135deg, #9B2242, #c4356a)", color: "#fff", border: "none", borderRadius: 14, padding: "16px", fontSize: 16, cursor: "pointer", fontFamily: "inherit", minHeight: 52, marginBottom: 10, fontWeight: 500, letterSpacing: "0.02em", boxShadow: copied ? "0 8px 24px rgba(34,197,94,0.35)" : "0 8px 24px rgba(155,34,66,0.4)", transition: "all 0.2s" }}
+          >
+            {copied ? "✓ Copied to clipboard" : "📋 Copy gift link"}
           </button>
 
           {typeof navigator !== "undefined" && typeof navigator.share === "function" && (
             <button
               onClick={() => navigator.share({ title: "A Heartfelt gift for you", text: `A little something for you 💝`, url: shareLink }).catch(() => {})}
-              style={{ width: "100%", background: "#3D1F2A", color: "#fff", border: "1px solid #5a3543", borderRadius: 12, padding: "13px", fontSize: 15, cursor: "pointer", fontFamily: "inherit", minHeight: 48, marginBottom: 10 }}
+              style={{ width: "100%", background: "rgba(255,255,255,0.06)", color: "#fff", border: "1px solid rgba(245,207,254,0.18)", borderRadius: 14, padding: "14px", fontSize: 15, cursor: "pointer", fontFamily: "inherit", minHeight: 50, marginBottom: 14, backdropFilter: "blur(8px)" }}
             >
-              📤 Share…
+              📤 Share via…
             </button>
           )}
 
-          <div style={{ display: "flex", gap: 8, marginBottom: 18 }}>
-            <a href={`https://wa.me/?text=${waText}`} target="_blank" rel="noreferrer" style={{ flex: 1, background: "#25D366", color: "#fff", border: "none", borderRadius: 12, padding: "12px", fontSize: 14, textDecoration: "none", display: "flex", alignItems: "center", justifyContent: "center", minHeight: 46 }}>
-              WhatsApp
+          <div style={{ display: "flex", gap: 10, marginBottom: 22 }}>
+            <a href={`https://wa.me/?text=${waText}`} target="_blank" rel="noreferrer" style={{ flex: 1, background: "linear-gradient(135deg, #25D366, #128C7E)", color: "#fff", border: "none", borderRadius: 12, padding: "13px", fontSize: 14, textDecoration: "none", display: "flex", alignItems: "center", justifyContent: "center", minHeight: 48, fontWeight: 500, boxShadow: "0 6px 18px rgba(37,211,102,0.3)" }}>
+              💬 WhatsApp
             </a>
-            <a href={`sms:?&body=${waText}`} style={{ flex: 1, background: "#3D1F2A", color: "#fff", border: "1px solid #5a3543", borderRadius: 12, padding: "12px", fontSize: 14, textDecoration: "none", display: "flex", alignItems: "center", justifyContent: "center", minHeight: 46 }}>
-              SMS
+            <a href={`sms:?&body=${waText}`} style={{ flex: 1, background: "rgba(255,255,255,0.06)", color: "#fff", border: "1px solid rgba(245,207,254,0.18)", borderRadius: 12, padding: "13px", fontSize: 14, textDecoration: "none", display: "flex", alignItems: "center", justifyContent: "center", minHeight: 48, fontWeight: 500 }}>
+              💌 SMS
             </a>
           </div>
 
-          <div style={{ borderTop: "1px solid #3a2530", paddingTop: 18, marginBottom: 14, textAlign: "left" }}>
-            <p style={{ fontSize: 12, opacity: 0.7, margin: "0 0 8px", textAlign: "center" }}>
-              ✉️ Email the link to yourself so you never lose it
+          <div style={{ borderTop: "1px solid rgba(245,207,254,0.12)", paddingTop: 20, marginBottom: 16, textAlign: "left" }}>
+            <p style={{ fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase", opacity: 0.55, margin: "0 0 10px", textAlign: "center", color: "#F5CFFE" }}>
+              ✉ Email it to yourself
             </p>
             <div style={{ display: "flex", gap: 8 }}>
               <input
@@ -625,19 +619,19 @@ function HeartfeltPage() {
                 value={senderEmail}
                 onChange={(e) => setSenderEmail(e.target.value)}
                 placeholder={savedEmail || "you@example.com"}
-                style={{ flex: 1, border: "1px solid #3a2530", background: "#2a1820", color: "#fff", borderRadius: 10, padding: "11px 12px", fontSize: 14, outline: "none", fontFamily: "inherit" }}
+                style={{ flex: 1, border: "1px solid rgba(245,207,254,0.18)", background: "rgba(0,0,0,0.3)", color: "#fff", borderRadius: 10, padding: "12px 14px", fontSize: 14, outline: "none", fontFamily: "inherit" }}
               />
               <a
                 href={mailto}
                 onClick={(e) => { if (!emailTo) { e.preventDefault(); setError("Enter an email first"); } else { try { localStorage.setItem("heartfelt_last_sender_email", emailTo); } catch {} } }}
-                style={{ background: "#9B2242", color: "#fff", border: "none", borderRadius: 10, padding: "11px 14px", fontSize: 14, textDecoration: "none", display: "flex", alignItems: "center", justifyContent: "center", minHeight: 44, fontFamily: "inherit" }}
+                style={{ background: "linear-gradient(135deg, #9B2242, #c4356a)", color: "#fff", border: "none", borderRadius: 10, padding: "12px 16px", fontSize: 14, textDecoration: "none", display: "flex", alignItems: "center", justifyContent: "center", minHeight: 46, fontFamily: "inherit", fontWeight: 500 }}
               >
-                Email me
+                Send
               </a>
             </div>
           </div>
 
-          <a href={shareLink} target="_blank" rel="noreferrer" style={{ display: "block", textAlign: "center", color: "#F5CFFE", fontSize: 13, fontStyle: "italic", textDecoration: "none", marginBottom: 14 }}>
+          <a href={shareLink} target="_blank" rel="noreferrer" style={{ display: "block", textAlign: "center", color: "#F5CFFE", fontSize: 13, fontStyle: "italic", textDecoration: "none", marginBottom: 16, opacity: 0.8 }}>
             👁 Preview what {recipientLabel} will see →
           </a>
 
@@ -650,6 +644,7 @@ function HeartfeltPage() {
       </div>
     );
   }
+
 
   if (step === "form") {
     return withAudio(
