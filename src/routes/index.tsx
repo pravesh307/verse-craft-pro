@@ -101,7 +101,7 @@ function Floral({ flip, flipY, color, opacity }: { flip?: boolean; flipY?: boole
 }
 
 // ===== Gift Reveal =====
-function GiftReveal({ result, occasion, onOpened, onPlayMusic }: { result: PoemResult; photo: string | null; occasion: string | null; onOpened: () => void; onPlayMusic: () => void }) {
+export function GiftReveal({ result, occasion, onOpened, onPlayMusic }: { result: PoemResult; photo: string | null; occasion: string | null; onOpened: () => void; onPlayMusic: () => void }) {
   const th = THEMES[result.theme] || THEMES.gratitude;
   const occ = OCCASIONS.find((o) => o.id === occasion);
   const [opened, setOpened] = useState(false);
@@ -151,7 +151,7 @@ function GiftReveal({ result, occasion, onOpened, onPlayMusic }: { result: PoemR
 }
 
 // ===== Poem viewer =====
-function PoemViewer({ result, photo, occasion, musicPlaying, onPlayMusic }: { result: PoemResult; photo: string | null; occasion: string | null; musicPlaying?: boolean; onPlayMusic?: () => void }) {
+export function PoemViewer({ result, photo, occasion, musicPlaying, onPlayMusic }: { result: PoemResult; photo: string | null; occasion: string | null; musicPlaying?: boolean; onPlayMusic?: () => void }) {
   const [slide, setSlide] = useState(0);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const touchX = useRef<number | null>(null);
@@ -380,7 +380,7 @@ function HeartfeltPage() {
       confirm({ data: { sessionId, giftId } })
         .then((r) => {
           if (r.paid) {
-            const link = `${window.location.origin}/?gift=${giftId}`;
+            const link = `${window.location.origin}/gift/${giftId}`;
             setShareLink(link);
             setPaidSuccess(true);
             try {
@@ -404,7 +404,7 @@ function HeartfeltPage() {
       try {
         const last = localStorage.getItem("heartfelt_last_gift");
         if (last) {
-          setShareLink(`${window.location.origin}/?gift=${last}`);
+          setShareLink(`${window.location.origin}/gift/${last}`);
           setPaidSuccess(true);
         }
       } catch {}
