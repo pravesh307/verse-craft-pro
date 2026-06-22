@@ -7,7 +7,7 @@ This project uses server functions, so deploy it as a server app — not as a st
 - Build command: `npm run build:netlify`
 - Publish directory: `dist`
 - Node version: `22`
-- Add these environment variables from your local `.env` / hosting secrets:
+- Add these backend environment variables from your local `.env` / hosting secrets:
   - `VITE_SUPABASE_URL`
   - `VITE_SUPABASE_PUBLISHABLE_KEY`
   - `VITE_SUPABASE_PROJECT_ID`
@@ -21,11 +21,11 @@ This project uses server functions, so deploy it as a server app — not as a st
 
 - Build command: `npm run build:cloudflare`
 - Node version: `22`
-- Add the same environment variables/secrets listed above.
+- Add the same backend environment variables/secrets listed above.
 
 ## Cloudflare Pages
 
 - Build command: `npm run build:cloudflare-pages`
 - Output directory: `dist`
 - Node version: `22`
-- Add the same environment variables/secrets listed above.
+- Add the same backend environment variables/secrets listed above.
