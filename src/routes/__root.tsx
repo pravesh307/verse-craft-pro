@@ -87,8 +87,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "Lovable App" },
       { name: "twitter:description", content: "Poetic AI Fix enhances a platform to generate poems based on user-provided situations and manage audio playback and payment settings." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/38d01c52-0643-4325-bd08-dbad492a3c36/id-preview-ea24d86b--0846d84f-5534-42a7-ac69-37077180f2dd.lovable.app-1781946788329.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/38d01c52-0643-4325-bd08-dbad492a3c36/id-preview-ea24d86b--0846d84f-5534-42a7-ac69-37077180f2dd.lovable.app-1781946788329.png" },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/96f93ff7-604b-480e-9dfd-d2c89b199c4b/id-preview-94c69a88--0846d84f-5534-42a7-ac69-37077180f2dd.lovable.app-1782178302061.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/96f93ff7-604b-480e-9dfd-d2c89b199c4b/id-preview-94c69a88--0846d84f-5534-42a7-ac69-37077180f2dd.lovable.app-1782178302061.png" },
     ],
     links: [
       {
