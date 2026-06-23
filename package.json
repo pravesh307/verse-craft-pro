@@ -6,9 +6,6 @@
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
-    "build:netlify": "NITRO_PRESET=netlify vite build",
-    "build:cloudflare": "NITRO_PRESET=cloudflare_module vite build",
-    "build:cloudflare-pages": "NITRO_PRESET=cloudflare_pages vite build",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
